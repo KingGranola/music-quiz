@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div id="version">ver 0.5 / build 001</div>
+<div id="version">ver 0.5 / build 005</div>
 
 <script src="js/artistData.js"></script>
 <script>
@@ -134,6 +134,13 @@ function showResult() {
 
   result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
   result.style.display = "block";
+
+  result.innerHTML += `
+  <div style="margin-top: 20px;">
+    <button onclick="location.reload()">もう一度診断する</button>
+  </div>
+`;
+
 
   const shareText = `🎵音楽ジャンル診断🎵\n私は「${topGenre}」に詳しいタイプでした！\n#音楽診断`;
   const url = encodeURIComponent(window.location.href);
