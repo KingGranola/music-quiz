@@ -132,14 +132,16 @@ function showResult() {
     .map(a => `${a.artist_ja || "（アーティスト不明）"}（${a.artist_en || ""}）`)
     .join('<br>');
 
-  result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
-  result.style.display = "block";
+result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
+result.style.display = "block";
 
-  result.innerHTML += `
+// 🔁 もう一度診断ボタンを追加！
+result.innerHTML += `
   <div style="margin-top: 20px;">
     <button onclick="location.reload()">もう一度診断する</button>
   </div>
 `;
+
 
 
   const shareText = `🎵音楽ジャンル診断🎵\n私は「${topGenre}」に詳しいタイプでした！\n#音楽診断`;
