@@ -56,8 +56,9 @@ button:hover {
 }
 
 canvas {
-  max-width: 100%;
-  margin-top: 30px;
+  width: 80%; /* 追加 */
+  max-width: 80%; /* 修正 */
+  margin-top: 20px; /* 修正 */
 }
 
 #result {
@@ -90,30 +91,4 @@ a {
 
 .share-btn.line {
   background-color: #00C300;
-}
-
-#progress {
-  width: 100%;
-  background-color: #e0e0de;
-  border-radius: 5px;
-  position: relative;
-  margin-bottom: 10px;
-  height: 20px;
-}
-
-#progress-bar {
-  height: 20px;
-  border-radius: 5px;
-  background-color: #4caf50;
-  width: 0%;
-  transition: width 0.3s ease-in-out;
-}
-
-#progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 14px;
 }
