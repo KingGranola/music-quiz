@@ -57,11 +57,12 @@ const questions = Object.keys(artistData)
 function updateProgress() {
   const progressText = document.getElementById("progress-text");
   const progressBar = document.getElementById("progress-bar");
-  const percent = ((current + 1) / totalQuestions) * 100;
 
-  progressText.innerText = `${current + 1} / ${totalQuestions}問`;
+  const percent = Math.round((current / totalQuestions) * 100);
+  progressText.innerText = `${current} / ${totalQuestions}問`;
   progressBar.style.width = `${percent}%`;
 }
+
 
 
 function showQuestion() {
