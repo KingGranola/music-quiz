@@ -98,6 +98,7 @@ a {
   border-radius: 5px;
   position: relative;
   margin-bottom: 10px;
+  height: 20px;
 }
 
 #progress-bar {
