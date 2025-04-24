@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>音楽ジャンル知識診断</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="音楽ジャンル知識診断" />
+  <meta property="og:description" content="50問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
+  <meta property="og:image" content="https://yourname.github.io/music-quiz/img/og-image.png" />
+  <meta property="og:url" content="https://yourname.github.io/music-quiz/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="container">
+  <h1>音楽ジャンル知識診断</h1>
+  <div id="progress">1 / 50問</div>
+  <div id="genre" class="genre-label"></div>
+  <div id="question">読み込み中...</div>
+  <div id="buttons">
+    <button class="btn-level-3" onclick="answer(3)">5曲以上知っている</button>
+    <button class="btn-level-2" onclick="answer(2)">1曲くらいは知っている</button>
+    <button class="btn-level-1" onclick="answer(1)">アーティスト名は知っている</button>
+    <button class="btn-level-0" onclick="answer(0)">名前も知らない</button>
+  </div>
+
+  <canvas id="chart" style="display: none;"></canvas>
+  <div id="result" style="display: none;"></div>
+
+  <div id="share" style="display: none; margin-top: 30px;">
+    <a id="twitter-share-button" class="share-btn twitter" target="_blank">Twitterでシェア</a>
+    <a id="line-share-button" class="share-btn line" target="_blank">LINEでシェア</a>
+  </div>
+  
+</div>
+<script src="js/artistData.js"></script>
+<script>
+let current = 0;
+const scores = {};
+const totalQuestions = 50;
+
+const questions = Object.keys(artistData)
+  .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 5))
+  .flat()
+  .sort(() => 0.5 - Math.random());
+
+function updateProgress() {
+  document.getElementById("progress").innerText = `${current + 1} / ${totalQuestions}問`;
+}
+
+function showQuestion() {
+  if (current >= totalQuestions) return showResult();
+  const q = questions[current];
+  document.getElementById("genre").innerText = `ジャンル：${q.genre}`;
+  document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
+  updateProgress();
+}
+
+function answer(point) {
+  const q = questions[current];
+  if (!scores[q.genre]) scores[q.genre] = { score: 0, max: 0 };
+  scores[q.genre].score += point;
+  scores[q.genre].max += 3;
+  current++;
+  showQuestion();
+}
+
+function showResult() {
+  document.getElementById("question").style.display = "none";
+  document.getElementById("buttons").style.display = "none";
+  document.getElementById("progress").style.display = "none";
+  document.getElementById("genre").style.display = "none"; // ← ← ← ★これを追加！
+  const labels = Object.keys(scores);
+  const data = labels.map(g => Math.round((scores[g].score / scores[g].max) * 100));
+
+  const ctx = document.getElementById("chart").getContext("2d");
+  document.getElementById("chart").style.display = "block";
+
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [{
+        label: '知識度（%）',
+        data,
+        fill: true,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { r: { suggestedMin: 0, suggestedMax: 100 } }
+    }
+  });
+
+  const result = document.getElementById("result");
+  result.innerHTML = `<h2>診断完了！</h2><p>ジャンルごとの知識度をご確認ください 🎧</p>`;
+  result.style.display = "block";
+
+  // SNSシェアボタン
+  const topGenre = labels[data.indexOf(Math.max(...data))];
+  const shareText = `🎵音楽ジャンル診断の結果🎵\n私は「${topGenre}」に詳しいタイプでした！`;
+  const url = encodeURIComponent(window.location.href);
+  document.getElementById("twitter-share-button").href =
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${url}`;
+  document.getElementById("line-share-button").href =
+    `https://social-plugins.line.me/lineit/share?url=${url}`;
+  document.getElementById("share").style.display = "block";
+}
+
+showQuestion();
+</script>
+</body>
+</html>
