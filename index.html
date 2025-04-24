@@ -55,9 +55,14 @@ const questions = Object.keys(artistData)
   .sort(() => 0.5 - Math.random());
 
 function updateProgress() {
-  document.getElementById("progress-text").innerText = `${current + 1} / ${totalQuestions}問`;
-  document.getElementById("progress-bar").style.width = `${((current + 1) / totalQuestions) * 100}%`;
+  const progressText = document.getElementById("progress-text");
+  const progressBar = document.getElementById("progress-bar");
+  const percent = ((current + 1) / totalQuestions) * 100;
+
+  progressText.innerText = `${current + 1} / ${totalQuestions}問`;
+  progressBar.style.width = `${percent}%`;
 }
+
 
 function showQuestion() {
   if (current >= totalQuestions) return showResult();
