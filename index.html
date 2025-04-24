@@ -6,7 +6,7 @@
   <title>音楽ジャンル知識診断</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:title" content="音楽ジャンル知識診断" />
-  <meta property="og:description" content="30問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
+  <meta property="og:description" content="50問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
   <meta property="og:image" content="https://yourname.github.io/music-quiz/img/og-image.png" />
   <meta property="og:url" content="https://yourname.github.io/music-quiz/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -37,6 +37,7 @@
     </div>
 
   </div>
+  <div id="version">ver 0.1 (build 1)</div>
   <script src="js/artistData.js"></script>
   <script>
     let current = 0;
@@ -101,32 +102,9 @@
           scales: {
             r: {
               suggestedMin: 0,
-              suggestedMax: 100,
-              ticks: {
-                display: false
-              }
+              suggestedMax: 100
             }
-          },
-          plugins: { /* 追加 */
-            legend: {
-              display: false
-            },
-            title: {
-              display: false
-            },
-            tooltip: {
-              enabled: true
-            }
-          },
-          elements: {
-            line: {
-              borderWidth: 3
-            }
-          },
-          layout: {
-            padding: 10
-          },
-          maintainAspectRatio: false,
+          }
         }
       });
 
