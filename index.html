@@ -17,10 +17,10 @@
 <div id="container">
   <h1>音楽ジャンル知識診断</h1>
 
-<div id="progress">
-  <div id="progress-bar"></div>
-  <div id="progress-text">1 / 30問</div>
-</div>
+  <div id="progress">
+    <div id="progress-bar"></div>
+    <div id="progress-text">0 / 30問</div>
+  </div>
 
   <div id="genre" class="genre-label"></div>
   <div id="question">読み込み中...</div>
@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<div id="version">ver 0.3 / build 003</div>
+<div id="version">ver 0.5 / build 001</div>
 
 <script src="js/artistData.js"></script>
 <script>
@@ -50,26 +50,29 @@ const scores = {};
 const totalQuestions = 30;
 
 const questions = Object.keys(artistData)
-  .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 5))
+  .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3))
   .flat()
   .sort(() => 0.5 - Math.random());
 
 function updateProgress() {
   const progressText = document.getElementById("progress-text");
   const progressBar = document.getElementById("progress-bar");
-
   const percent = Math.round((current / totalQuestions) * 100);
+
   progressText.innerText = `${current} / ${totalQuestions}問`;
   progressBar.style.width = `${percent}%`;
 }
 
-
-
 function showQuestion() {
   if (current >= totalQuestions) return showResult();
   const q = questions[current];
-  document.getElementById("genre").innerText = `ジャンル：${q.genre}`;
-  document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
+
+  const genre = q.genre || "不明ジャンル";
+  const artistJa = q.artist_ja || "（アーティスト名不明）";
+  const artistEn = q.artist_en || "";
+
+  document.getElementById("genre").innerText = `ジャンル：${genre}`;
+  document.getElementById("question").innerText = `${artistJa}（${artistEn}）をどれくらい知ってる？`;
   updateProgress();
 }
 
@@ -122,10 +125,10 @@ function showResult() {
     <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
   `;
 
-  const recommendations = artistData[topGenre]
+  const recommendations = (artistData[topGenre] || [])
     .sort(() => 0.5 - Math.random())
     .slice(0, 3)
-    .map(a => `${a.artist_ja}（${a.artist_en}）`)
+    .map(a => `${a.artist_ja || "（アーティスト不明）"}（${a.artist_en || ""}）`)
     .join('<br>');
 
   result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
@@ -140,9 +143,7 @@ function showResult() {
   document.getElementById("share").style.display = "block";
 }
 
-
 showQuestion();
 </script>
-
 </body>
 </html>
