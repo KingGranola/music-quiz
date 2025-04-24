@@ -84,6 +84,8 @@ function showResult() {
 
   const labels = Object.keys(scores);
   const data = labels.map(g => Math.round((scores[g].score / scores[g].max) * 100));
+  const topGenre = labels[data.indexOf(Math.max(...data))];
+  const weakGenre = labels[data.indexOf(Math.min(...data))];
 
   const ctx = document.getElementById("chart").getContext("2d");
   document.getElementById("chart").style.display = "block";
@@ -108,11 +110,22 @@ function showResult() {
   });
 
   const result = document.getElementById("result");
-  result.innerHTML = `<h2>診断完了！</h2><p>ジャンルごとの知識度をご確認ください 🎧</p>`;
+  result.innerHTML = `
+    <h2>診断完了！</h2>
+    <p>ジャンルごとの知識度をご確認ください 🎧</p>
+    <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
+  `;
+
+  const recommendations = artistData[topGenre]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3)
+    .map(a => `${a.artist_ja}（${a.artist_en}）`)
+    .join('<br>');
+
+  result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
   result.style.display = "block";
 
-  const topGenre = labels[data.indexOf(Math.max(...data))];
-  const shareText = `🎵音楽ジャンル診断の結果🎵\n私は「${topGenre}」に詳しいタイプでした！\n#音楽診断`;
+  const shareText = `🎵音楽ジャンル診断🎵\n私は「${topGenre}」に詳しいタイプでした！\n#音楽診断`;
   const url = encodeURIComponent(window.location.href);
   document.getElementById("twitter-share-button").href =
     `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${url}`;
@@ -120,6 +133,7 @@ function showResult() {
     `https://social-plugins.line.me/lineit/share?url=${url}`;
   document.getElementById("share").style.display = "block";
 }
+
 
 showQuestion();
 </script>
