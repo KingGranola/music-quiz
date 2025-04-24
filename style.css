@@ -56,9 +56,8 @@ button:hover {
 }
 
 canvas {
-  width: 80%; /* 追加 */
-  max-width: 80%; /* 修正 */
-  margin-top: 20px; /* 修正 */
+  max-width: 100%;
+  margin-top: 30px;
 }
 
 #result {
@@ -91,4 +90,12 @@ a {
 
 .share-btn.line {
   background-color: #00C300;
+}
+
+#version {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #888;
 }
