@@ -18,10 +18,7 @@
 
   <div id="container">
     <h1>音楽ジャンル知識診断</h1>
-    <div id="progress">
-      <div id="progress-bar"></div>
-      <span id="progress-text">1 / 30問</span>
-    </div>
+    <div id="progress">1 / 50問</div>
     <div id="genre" class="genre-label"></div>
     <div id="question">読み込み中...</div>
     <div id="buttons">
@@ -44,27 +41,22 @@
   <script>
     let current = 0;
     const scores = {};
-    const totalQuestions = 30; // 問題数を30問に変更
+    const totalQuestions = 50;
 
     const questions = Object.keys(artistData)
-      .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3)) // 各ジャンルから3問ずつ
+      .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 5))
       .flat()
-      .sort(() => 0.5 - Math.random())
-      .slice(0, totalQuestions); // 全体で30問になるように調整
+      .sort(() => 0.5 - Math.random());
 
     function updateProgress() {
-      const progressText = document.getElementById("progress-text");
-      const progressBar = document.getElementById("progress-bar");
-      const progress = ((current + 1) / totalQuestions) * 100;
-      progressBar.style.width = `${progress}%`;
-      progressText.innerText = `${current + 1} / ${totalQuestions}問`;
+      document.getElementById("progress").innerText = `${current + 1} / ${totalQuestions}問`;
     }
 
     function showQuestion() {
       if (current >= totalQuestions) return showResult();
       const q = questions[current];
       document.getElementById("genre").innerText = `ジャンル：${q.genre}`;
-      document.getElementById("question").innerText = `${q.artist_ja || q.artist_en}（${q.artist_en}）をどれくらい知ってる？`; // 日本語名がない場合に英語名を表示
+      document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
       updateProgress();
     }
 
@@ -84,7 +76,7 @@
       document.getElementById("question").style.display = "none";
       document.getElementById("buttons").style.display = "none";
       document.getElementById("progress").style.display = "none";
-      document.getElementById("genre").style.display = "none";
+      document.getElementById("genre").style.display = "none"; // ← ← ← ★これを追加！
       const labels = Object.keys(scores);
       const data = labels.map(g => Math.round((scores[g].score / scores[g].max) * 100));
 
@@ -109,41 +101,41 @@
           scales: {
             r: {
               suggestedMin: 0,
-              suggestedMax: 100
+              suggestedMax: 100,
+              ticks: {
+                display: false
+              }
             }
-          }
+          },
+          plugins: { /* 追加 */
+            legend: {
+              display: false
+            },
+            title: {
+              display: false
+            },
+            tooltip: {
+              enabled: true
+            }
+          },
+          elements: {
+            line: {
+              borderWidth: 3
+            }
+          },
+          layout: {
+            padding: 10
+          },
+          maintainAspectRatio: false,
         }
       });
 
       const result = document.getElementById("result");
-      let resultText = `<h2>診断完了！</h2><p>ジャンルごとの知識度をご確認ください 🎧</p>`;
-
-      // 強いジャンル、弱いジャンルを特定
-      const sortedGenres = labels.map((label, index) => ({
-        genre: label,
-        percentage: data[index]
-      })).sort((a, b) => b.percentage - a.percentage);
-
-      const topGenre = sortedGenres[0].genre;
-      const worstGenre = sortedGenres[sortedGenres.length - 1].genre;
-
-      resultText += `<p>あなたの得意なジャンルは「${topGenre}」です！</p>`;
-      resultText += `<p>もっと知りたいジャンルは「${worstGenre}」かもしれません。</p>`;
-
-      // おすすめアーティストを提示 (上位3ジャンルからランダムに1アーティストずつ提示)
-      resultText += `<p>あなたへのおすすめアーティストはこちら！</p><ul>`;
-      for (let i = 0; i < Math.min(3, sortedGenres.length); i++) {
-        const genre = sortedGenres[i].genre;
-        const randomIndex = Math.floor(Math.random() * artistData[genre].length);
-        const recommendedArtist = artistData[genre][randomIndex].artist_ja || artistData[genre][randomIndex].artist_en;
-        resultText += `<li>${genre}: ${recommendedArtist}</li>`;
-      }
-      resultText += `</ul>`;
-
-      result.innerHTML = resultText;
+      result.innerHTML = `<h2>診断完了！</h2><p>ジャンルごとの知識度をご確認ください 🎧</p>`;
       result.style.display = "block";
 
       // SNSシェアボタン
+      const topGenre = labels[data.indexOf(Math.max(...data))];
       const shareText = `🎵音楽ジャンル診断の結果🎵\n私は「${topGenre}」に詳しいタイプでした！`;
       const url = encodeURIComponent(window.location.href);
       document.getElementById("twitter-share-button").href =
