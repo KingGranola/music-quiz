@@ -5,7 +5,7 @@
   <title>音楽ジャンル知識診断</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:title" content="音楽ジャンル知識診断" />
-  <meta property="og:description" content="50問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
+  <meta property="og:description" content="30問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
   <meta property="og:image" content="https://yourname.github.io/music-quiz/img/og-image.png" />
   <meta property="og:url" content="https://yourname.github.io/music-quiz/" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -47,7 +47,7 @@
 <script>
 let current = 0;
 const scores = {};
-const totalQuestions = 50;
+const totalQuestions = 30;
 
 const questions = Object.keys(artistData)
   .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 5))
