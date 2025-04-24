@@ -34,10 +34,22 @@ button {
   max-width: 300px;
 }
 
-.btn-level-3 { background-color: #4CAF50; }
-.btn-level-2 { background-color: #2196F3; }
-.btn-level-1 { background-color: #FFC107; color: #333; }
-.btn-level-0 { background-color: #F44336; }
+.btn-level-3 {
+  background-color: #4CAF50;
+}
+
+.btn-level-2 {
+  background-color: #2196F3;
+}
+
+.btn-level-1 {
+  background-color: #FFC107;
+  color: #333;
+}
+
+.btn-level-0 {
+  background-color: #F44336;
+}
 
 button:hover {
   opacity: 0.85;
@@ -60,6 +72,7 @@ a {
   display: block;
   margin: 10px 0;
 }
+
 .share-btn {
   display: inline-block;
   margin: 10px;
@@ -77,4 +90,29 @@ a {
 
 .share-btn.line {
   background-color: #00C300;
+}
+
+#progress {
+  width: 100%;
+  background-color: #e0e0de;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+#progress-bar {
+  height: 20px;
+  border-radius: 5px;
+  background-color: #4caf50;
+  width: 0%;
+  transition: width 0.3s ease-in-out;
+}
+
+#progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
 }
