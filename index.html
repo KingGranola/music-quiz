@@ -17,10 +17,10 @@
 <div id="container">
   <h1>音楽ジャンル知識診断</h1>
 
-  <div id="progress">
+  <div id="progress-container">
     <div id="progress-bar"></div>
-    <div id="progress-text">0 / 30問</div>
   </div>
+  <div id="progress-text">0 / 30問</div>
 
   <div id="genre" class="genre-label"></div>
   <div id="question">読み込み中...</div>
@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div id="version">ver 0.6 / build 002</div>
+<div id="version">ver 0.6 / build 003</div>
 
 <script src="js/artistData.js"></script>
 <script>
@@ -55,11 +55,11 @@ const questions = Object.keys(artistData)
   .sort(() => 0.5 - Math.random());
 
 function updateProgress() {
-  const progressText = document.getElementById("progress-text");
   const progressBar = document.getElementById("progress-bar");
-  const percent = Math.round((current / totalQuestions) * 100);
-  progressText.innerText = `${current} / ${totalQuestions}問`;
+  const progressText = document.getElementById("progress-text");
+  const percent = Math.floor((current / totalQuestions) * 100);
   progressBar.style.width = `${percent}%`;
+  progressText.innerText = `${current} / ${totalQuestions}問`;
 }
 
 function showQuestion() {
@@ -86,7 +86,8 @@ function answer(point) {
 function showResult() {
   document.getElementById("question").style.display = "none";
   document.getElementById("buttons").style.display = "none";
-  document.getElementById("progress").style.display = "none";
+  document.getElementById("progress-container").style.display = "none";
+  document.getElementById("progress-text").style.display = "none";
   document.getElementById("genre").style.display = "none";
 
   const labels = Object.keys(scores);
@@ -122,7 +123,6 @@ function showResult() {
     <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
   `;
 
-  // 🎁 おすすめアーティスト表示
   const recommendations = (artistData[topGenre] || [])
     .sort(() => 0.5 - Math.random())
     .slice(0, 3)
@@ -131,7 +131,6 @@ function showResult() {
 
   result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
 
-  // 📊 出題内訳テーブル＋信頼度評価
   let tableHTML = `<table style="margin:auto; border-collapse: collapse;"><tr><th>ジャンル</th><th>出題数</th><th>得点率</th></tr>`;
   let coveredGenres = 0;
   labels.forEach((g, i) => {
@@ -153,7 +152,6 @@ function showResult() {
     <span style="font-size: 1.5em;">${stars}</span></p>
   `;
 
-  // 🔁 再診断ボタン
   result.innerHTML += `
     <div style="margin-top: 20px;">
       <button onclick="location.reload()">もう一度診断する</button>
@@ -161,11 +159,8 @@ function showResult() {
   `;
 
   result.style.display = "block";
-
-  // 🚫 シェアボタンは非表示のまま
   document.getElementById("share").style.display = "none";
 }
-
 showQuestion();
 </script>
 </body>
