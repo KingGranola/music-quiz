@@ -2,7 +2,7 @@ body {
   font-family: sans-serif;
   text-align: center;
   padding: 20px;
-  background: #f0f0f0;
+  background: #f9f9f9;
 }
 
 h1 {
@@ -23,25 +23,23 @@ h1 {
 }
 
 button {
-  padding: 12px 18px;
+  padding: 14px 20px;
   margin: 8px;
   font-size: 16px;
   border-radius: 6px;
   border: none;
-  color: white;
   cursor: pointer;
   width: 90%;
-  max-width: 300px;
+  max-width: 320px;
+  min-width: 200px;
+  color: white;
 }
 
-.btn-level-3 { background-color: #4CAF50; }
-.btn-level-2 { background-color: #2196F3; }
-.btn-level-1 { background-color: #FFC107; color: #333; }
-.btn-level-0 { background-color: #F44336; }
-
-button:hover {
-  opacity: 0.85;
-}
+.btn-level-4 { background-color: #000000; color: white; }
+.btn-level-3 { background-color: #228B22; }
+.btn-level-2 { background-color: #1E90FF; }
+.btn-level-1 { background-color: #FFA500; color: black; }
+.btn-level-0 { background-color: #B22222; }
 
 canvas {
   max-width: 100%;
@@ -53,13 +51,28 @@ canvas {
   font-size: 18px;
 }
 
-a {
-  text-decoration: none;
-  color: #1DA1F2;
-  font-weight: bold;
-  display: block;
-  margin: 10px 0;
+#progress-container {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  height: 20px;
+  overflow: hidden;
+  margin-bottom: 10px;
 }
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #4CAF50;
+  transition: width 0.3s ease-in-out;
+}
+
+#progress-text {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
 .share-btn {
   display: inline-block;
   margin: 10px;
@@ -71,10 +84,23 @@ a {
   font-weight: bold;
 }
 
-.share-btn.twitter {
-  background-color: #1DA1F2;
+.share-btn.twitter { background-color: #1DA1F2; }
+.share-btn.line { background-color: #00C300; }
+
+#version {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #888;
 }
 
-.share-btn.line {
-  background-color: #00C300;
+table {
+  width: 80%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+table th, table td {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
 }

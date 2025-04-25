@@ -911,156 +911,156 @@ const artistData = {
       "genre": "ソウル・R&B"
     }
   ],
-  "パンク・ニューウェーブ": [
+  "パンク・NW": [
     {
       "artist_ja": "ザ・クラッシュ",
       "artist_en": "The Clash",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "セックス・ピストルズ",
       "artist_en": "Sex Pistols",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ラモーンズ",
       "artist_en": "Ramones",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "トーキング・ヘッズ",
       "artist_en": "Talking Heads",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ブロンディ",
       "artist_en": "Blondie",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ポリス",
       "artist_en": "The Police",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ジョイ・ディヴィジョン",
       "artist_en": "Joy Division",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ザ・キュアー",
       "artist_en": "The Cure",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "デペッシュ・モード",
       "artist_en": "Depeche Mode",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "エルヴィス・コステロ",
       "artist_en": "Elvis Costello",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "スージー・アンド・ザ・バンシーズ",
       "artist_en": "Siouxsie and the Banshees",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "パブリック・イメージ・リミテッド",
       "artist_en": "Public Image Ltd",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "イギー・ポップ",
       "artist_en": "Iggy Pop",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "デッド・ケネディーズ",
       "artist_en": "Dead Kennedys",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ブラック・フラッグ",
       "artist_en": "Black Flag",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ニュー・オーダー",
       "artist_en": "New Order",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ヒューマン・リーグ",
       "artist_en": "The Human League",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ソフト・セル",
       "artist_en": "Soft Cell",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "カルチャー・クラブ",
       "artist_en": "Culture Club",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "デュラン・デュラン",
       "artist_en": "Duran Duran",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "スパンダー・バレエ",
       "artist_en": "Spandau Ballet",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ザ・スミス",
       "artist_en": "The Smiths",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ハッピー・マンデーズ",
       "artist_en": "Happy Mondays",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ストーン・ローゼズ",
       "artist_en": "The Stone Roses",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "PIL (Public Image Ltd)",
       "artist_en": "PIL (Public Image Ltd)",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "XTC",
       "artist_en": "XTC",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "プリテンダーズ",
       "artist_en": "The Pretenders",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "ギャング・オブ・フォー",
       "artist_en": "Gang of Four",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "バウハウス",
       "artist_en": "Bauhaus",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     },
     {
       "artist_ja": "スロッビング・グリッスル",
       "artist_en": "Throbbing Gristle",
-      "genre": "パンク・ニューウェーブ"
+      "genre": "パンク・NW"
     }
   ],
   "ボカロ": [
