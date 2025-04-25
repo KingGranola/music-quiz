@@ -35,7 +35,7 @@ button {
   color: white;
 }
 
-.btn-level-4 { background-color: #000000; }
+.btn-level-4 { background-color: #000000; color: white; }
 .btn-level-3 { background-color: #228B22; }
 .btn-level-2 { background-color: #1E90FF; }
 .btn-level-1 { background-color: #FFA500; color: black; }
