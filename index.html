@@ -2,25 +2,26 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>音楽ジャンル知識診断</title>
+  <title>音楽ジャンル診断</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta property="og:title" content="音楽ジャンル知識診断" />
-  <meta property="og:description" content="30問であなたの音楽ジャンル知識を分析！どのジャンルに詳しい？" />
-  <meta property="og:image" content="https://yourname.github.io/music-quiz/img/og-image.png" />
-  <meta property="og:url" content="https://yourname.github.io/music-quiz/" />
-  <meta name="twitter:card" content="summary_large_image" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div id="container">
-  <h1>音楽ジャンル知識診断</h1>
+<div id="genre-selection">
+  <h2>ジャンルを5つ選んでください</h2>
+  <div id="genre-options" style="margin: 20px;"></div>
+  <button id="start-button" disabled>診断スタート</button>
+</div>
+
+<div id="container" style="display: none;">
+  <h1>音楽ジャンル診断</h1>
 
   <div id="progress-container">
     <div id="progress-bar"></div>
   </div>
-  <div id="progress-text">0 / 30問</div>
+  <div id="progress-text">0 / 15問</div>
 
   <div id="genre" class="genre-label"></div>
   <div id="question">読み込み中...</div>
@@ -33,62 +34,105 @@
     <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
   </div>
 
-  <canvas id="chart" style="display: none;"></canvas>
+  <canvas id="chart" style="display: none; margin-top: 30px;"></canvas>
   <div id="result" style="display: none;"></div>
-
-  <div id="share" style="display: none; margin-top: 30px;">
-    <a id="twitter-share-button" class="share-btn twitter" target="_blank">Twitterでシェア</a>
-    <a id="line-share-button" class="share-btn line" target="_blank">LINEでシェア</a>
-  </div>
 </div>
 
-<div id="version">ver 0.6 / build 004</div>
+<div id="version">ver 0.7 / build 006</div>
 
 <script src="js/artistData.js"></script>
 <script>
 let current = 0;
-const scores = {};
-const totalQuestions = 30;
+let scores = {};
+const questions = [];
+const totalPerGenre = 3;
 
-const questions = Object.keys(artistData)
-  .flatMap(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3))
-  .sort(() => 0.5 - Math.random());
+function getSelectedGenres() {
+  return [...document.querySelectorAll('input[name="genre"]:checked')].map(cb => cb.value);
+}
+
+function setupGenreSelection() {
+  const genreList = Object.keys(artistData);
+  const genreOptions = document.getElementById("genre-options");
+  genreList.forEach(genre => {
+    const label = document.createElement("label");
+    label.style.margin = "10px";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.name = "genre";
+    checkbox.value = genre;
+    checkbox.style.marginRight = "5px";
+    label.appendChild(checkbox);
+    label.append(genre);
+    genreOptions.appendChild(label);
+  });
+
+  const startButton = document.getElementById("start-button");
+  genreOptions.addEventListener("change", () => {
+    const selected = getSelectedGenres();
+    startButton.disabled = selected.length !== 5;
+    document.querySelectorAll('input[name="genre"]').forEach(cb => {
+      cb.disabled = selected.length >= 5 && !cb.checked;
+    });
+  });
+
+  startButton.addEventListener("click", () => {
+    const selectedGenres = getSelectedGenres();
+    if (selectedGenres.length !== 5) return;
+    document.getElementById("genre-selection").style.display = "none";
+    document.getElementById("container").style.display = "block";
+    startQuiz(selectedGenres);
+  });
+}
+
+function startQuiz(selectedGenres) {
+  current = 0;
+  scores = {};
+  questions.length = 0;
+
+  selectedGenres.forEach(genre => {
+    const selected = artistData[genre].sort(() => 0.5 - Math.random()).slice(0, totalPerGenre);
+    questions.push(...selected);
+  });
+  questions.sort(() => 0.5 - Math.random());
+
+  showQuestion();
+}
 
 function updateProgress() {
-  const progressBar = document.getElementById("progress-bar");
-  const progressText = document.getElementById("progress-text");
-  const percent = Math.floor((current / totalQuestions) * 100);
-  progressBar.style.width = `${percent}%`;
-  progressText.innerText = `${current} / ${totalQuestions}問`;
+  const percent = Math.floor((current / questions.length) * 100);
+  document.getElementById("progress-bar").style.width = `${percent}%`;
+  document.getElementById("progress-text").innerText = `${current} / ${questions.length}問`;
 }
 
 function showQuestion() {
-  if (current >= totalQuestions) return showResult();
+  if (current >= questions.length) return showResult();
   const q = questions[current];
-  const genre = q.genre || "不明ジャンル";
-  const artistJa = q.artist_ja || "（アーティスト名不明）";
-  const artistEn = q.artist_en || "";
-
-  document.getElementById("genre").innerText = `ジャンル：${genre}`;
-  document.getElementById("question").innerText = `${artistJa}（${artistEn}）をどれくらい知ってる？`;
+  document.getElementById("genre").innerText = `ジャンル：${q.genre}`;
+  document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
   updateProgress();
 }
 
 function answer(point) {
   const q = questions[current];
+  const level = parseInt(q.major_level) || 3; // デフォルト中間
+  const weight = 6 - level; // メジャー度が低いほど倍率↑
+  const adjusted = point * weight;
+
   if (!scores[q.genre]) scores[q.genre] = { score: 0, max: 0 };
-  scores[q.genre].score += point;
-  scores[q.genre].max += 4;
+  scores[q.genre].score += adjusted;
+  scores[q.genre].max += 4 * weight;
+
   current++;
   showQuestion();
 }
 
 function showResult() {
-  document.getElementById("question").style.display = "none";
   document.getElementById("buttons").style.display = "none";
   document.getElementById("progress-container").style.display = "none";
   document.getElementById("progress-text").style.display = "none";
   document.getElementById("genre").style.display = "none";
+  document.getElementById("question").style.display = "none";
 
   const labels = Object.keys(scores);
   const data = labels.map(g => Math.round((scores[g].score / scores[g].max) * 100));
@@ -106,9 +150,9 @@ function showResult() {
         label: '知識度（%）',
         data,
         fill: true,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        pointBackgroundColor: 'rgba(75, 192, 192, 1)'
       }]
     },
     options: {
@@ -121,47 +165,17 @@ function showResult() {
   result.innerHTML = `
     <h2>診断完了！</h2>
     <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
-  `;
-
-  const recommendations = (artistData[topGenre] || [])
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 3)
-    .map(a => `${a.artist_ja || "（アーティスト不明）"}（${a.artist_en || ""}）`)
-    .join('<br>');
-
-  result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
-
-  let tableHTML = `<table style="margin:auto; border-collapse: collapse;"><tr><th>ジャンル</th><th>出題数</th><th>得点率</th></tr>`;
-  let coveredGenres = 0;
-  labels.forEach((g, i) => {
-    const score = scores[g].score;
-    const max = scores[g].max;
-    const rate = Math.round((score / max) * 100);
-    tableHTML += `<tr><td>${g}</td><td>${max / 4}</td><td>${rate}%</td></tr>`;
-    if (max > 0) coveredGenres++;
-  });
-  tableHTML += `</table>`;
-
-  const confidence = Math.round((coveredGenres / labels.length) * 100);
-  const stars = "★".repeat(Math.round(confidence / 20)) + "☆".repeat(5 - Math.round(confidence / 20));
-
-  result.innerHTML += `
     <h3>ジャンル別の診断内訳</h3>
-    ${tableHTML}
-    <p><strong>診断カバー率（信頼度）:</strong> ${confidence}%<br>
-    <span style="font-size: 1.5em;">${stars}</span></p>
+    <table style="margin:auto; border-collapse: collapse;"><tr><th>ジャンル</th><th>得点率</th></tr>
   `;
-
-  result.innerHTML += `
-    <div style="margin-top: 20px;">
-      <button onclick="location.reload()">もう一度診断する</button>
-    </div>
-  `;
-
+  labels.forEach((g, i) => {
+    result.innerHTML += `<tr><td>${g}</td><td>${data[i]}%</td></tr>`;
+  });
+  result.innerHTML += `</table><br><button onclick="location.reload()">もう一度診断する</button>`;
   result.style.display = "block";
-  document.getElementById("share").style.display = "none";
 }
-showQuestion();
+
+setupGenreSelection();
 </script>
 </body>
 </html>
