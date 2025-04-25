@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div id="version">ver 0.6 / build 001</div>
+<div id="version">ver 0.6 / build 002</div>
 
 <script src="js/artistData.js"></script>
 <script>
@@ -50,7 +50,6 @@ let current = 0;
 const scores = {};
 const totalQuestions = 30;
 
-// ★ 各ジャンル3問ずつ出題（均等バランス）
 const questions = Object.keys(artistData)
   .flatMap(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3))
   .sort(() => 0.5 - Math.random());
@@ -120,10 +119,10 @@ function showResult() {
   const result = document.getElementById("result");
   result.innerHTML = `
     <h2>診断完了！</h2>
-    <p>ジャンルごとの知識度をご確認ください 🎧</p>
     <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
   `;
 
+  // 🎁 おすすめアーティスト表示
   const recommendations = (artistData[topGenre] || [])
     .sort(() => 0.5 - Math.random())
     .slice(0, 3)
@@ -131,6 +130,28 @@ function showResult() {
     .join('<br>');
 
   result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
+
+  // 📊 出題内訳テーブル＋信頼度評価
+  let tableHTML = `<table style="margin:auto; border-collapse: collapse;"><tr><th>ジャンル</th><th>出題数</th><th>得点率</th></tr>`;
+  let coveredGenres = 0;
+  labels.forEach((g, i) => {
+    const score = scores[g].score;
+    const max = scores[g].max;
+    const rate = Math.round((score / max) * 100);
+    tableHTML += `<tr><td>${g}</td><td>${max / 4}</td><td>${rate}%</td></tr>`;
+    if (max > 0) coveredGenres++;
+  });
+  tableHTML += `</table>`;
+
+  const confidence = Math.round((coveredGenres / labels.length) * 100);
+  const stars = "★".repeat(Math.round(confidence / 20)) + "☆".repeat(5 - Math.round(confidence / 20));
+
+  result.innerHTML += `
+    <h3>ジャンル別の診断内訳</h3>
+    ${tableHTML}
+    <p><strong>診断カバー率（信頼度）:</strong> ${confidence}%<br>
+    <span style="font-size: 1.5em;">${stars}</span></p>
+  `;
 
   // 🔁 再診断ボタン
   result.innerHTML += `
@@ -141,9 +162,10 @@ function showResult() {
 
   result.style.display = "block";
 
-  // 🔇 シェアボタンは非活性にしたまま（復活時に表示切替）
+  // 🚫 シェアボタンは非表示のまま
   document.getElementById("share").style.display = "none";
 }
+
 showQuestion();
 </script>
 </body>
