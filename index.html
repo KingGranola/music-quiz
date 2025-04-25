@@ -13,7 +13,7 @@
   <h2>ジャンルを5つ選んでください</h2>
   <div id="genre-options" style="margin: 20px;"></div>
   <p id="genre-message" style="color:#d33; font-weight:bold;"></p>
-  <button id="start-button" disabled style="display:none;">診断スタート</button>
+  <button id="start-button" disabled style="display:none;">診断スタート!</button>
 </div>
 
 <div id="container" style="display: none;">
@@ -184,7 +184,7 @@ function showResult() {
   const result = document.getElementById("result");
   result.innerHTML = `
     <h2>診断完了！</h2>
-    <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
+    <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手？</strong></p>
     <h3>ジャンル別の診断内訳</h3>
     <table style="margin:auto; border-collapse: collapse;"><tr><th>ジャンル</th><th>得点率</th></tr>
   `;
