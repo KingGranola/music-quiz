@@ -25,13 +25,13 @@
   <div id="genre" class="genre-label"></div>
   <div id="question">読み込み中...</div>
 
-<div id="buttons">
-  <button class="btn-level-3" onclick="answer(3)">3曲以上知っている</button>
-  <button class="btn-level-2" onclick="answer(2)">曲は聴いたことある程度</button>
-  <button class="btn-level-1" onclick="answer(1)">アーティスト名は知っている</button>
-  <button class="btn-level-0" onclick="answer(0)">名前も知らない</button>
-</div>
-
+  <div id="buttons">
+    <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
+    <button class="btn-level-3" onclick="answer(3)">まあまあ聴く（3曲以上知っている）</button>
+    <button class="btn-level-2" onclick="answer(2)">曲を聴いたことがある</button>
+    <button class="btn-level-1" onclick="answer(1)">名前だけは知っている</button>
+    <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
+  </div>
 
   <canvas id="chart" style="display: none;"></canvas>
   <div id="result" style="display: none;"></div>
@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div id="version">ver 0.5 / build 005</div>
+<div id="version">ver 0.6 / build 001</div>
 
 <script src="js/artistData.js"></script>
 <script>
@@ -50,16 +50,15 @@ let current = 0;
 const scores = {};
 const totalQuestions = 30;
 
+// ★ 各ジャンル3問ずつ出題（均等バランス）
 const questions = Object.keys(artistData)
-  .map(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3))
-  .flat()
+  .flatMap(genre => artistData[genre].sort(() => 0.5 - Math.random()).slice(0, 3))
   .sort(() => 0.5 - Math.random());
 
 function updateProgress() {
   const progressText = document.getElementById("progress-text");
   const progressBar = document.getElementById("progress-bar");
   const percent = Math.round((current / totalQuestions) * 100);
-
   progressText.innerText = `${current} / ${totalQuestions}問`;
   progressBar.style.width = `${percent}%`;
 }
@@ -67,7 +66,6 @@ function updateProgress() {
 function showQuestion() {
   if (current >= totalQuestions) return showResult();
   const q = questions[current];
-
   const genre = q.genre || "不明ジャンル";
   const artistJa = q.artist_ja || "（アーティスト名不明）";
   const artistEn = q.artist_en || "";
@@ -81,7 +79,7 @@ function answer(point) {
   const q = questions[current];
   if (!scores[q.genre]) scores[q.genre] = { score: 0, max: 0 };
   scores[q.genre].score += point;
-  scores[q.genre].max += 3;
+  scores[q.genre].max += 4;
   current++;
   showQuestion();
 }
@@ -132,27 +130,20 @@ function showResult() {
     .map(a => `${a.artist_ja || "（アーティスト不明）"}（${a.artist_en || ""}）`)
     .join('<br>');
 
-result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
-result.style.display = "block";
+  result.innerHTML += `<p><strong>🎁 おすすめアーティスト：</strong><br>${recommendations}</p>`;
 
-// 🔁 もう一度診断ボタンを追加！
-result.innerHTML += `
-  <div style="margin-top: 20px;">
-    <button onclick="location.reload()">もう一度診断する</button>
-  </div>
-`;
+  // 🔁 再診断ボタン
+  result.innerHTML += `
+    <div style="margin-top: 20px;">
+      <button onclick="location.reload()">もう一度診断する</button>
+    </div>
+  `;
 
+  result.style.display = "block";
 
-
-  const shareText = `🎵音楽ジャンル診断🎵\n私は「${topGenre}」に詳しいタイプでした！\n#音楽診断`;
-  const url = encodeURIComponent(window.location.href);
-  document.getElementById("twitter-share-button").href =
-    `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${url}`;
-  document.getElementById("line-share-button").href =
-    `https://social-plugins.line.me/lineit/share?url=${url}`;
-  document.getElementById("share").style.display = "block";
+  // 🔇 シェアボタンは非活性にしたまま（復活時に表示切替）
+  document.getElementById("share").style.display = "none";
 }
-
 showQuestion();
 </script>
 </body>
