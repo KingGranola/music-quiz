@@ -12,7 +12,8 @@
 <div id="genre-selection">
   <h2>ジャンルを5つ選んでください</h2>
   <div id="genre-options" style="margin: 20px;"></div>
-  <button id="start-button" disabled>診断スタート</button>
+  <p id="genre-message" style="color:#d33; font-weight:bold;"></p>
+  <button id="start-button" disabled style="display:none;">診断スタート</button>
 </div>
 
 <div id="container" style="display: none;">
@@ -54,23 +55,42 @@ function getSelectedGenres() {
 function setupGenreSelection() {
   const genreList = Object.keys(artistData);
   const genreOptions = document.getElementById("genre-options");
+  const startButton = document.getElementById("start-button");
+  const message = document.getElementById("genre-message");
+
   genreList.forEach(genre => {
     const label = document.createElement("label");
+    label.style.display = "inline-block";
     label.style.margin = "10px";
+
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.name = "genre";
     checkbox.value = genre;
-    checkbox.style.marginRight = "5px";
+    checkbox.style.marginRight = "8px";
+    checkbox.style.transform = "scale(1.4)"; // チェックボックスを大きく
+
     label.appendChild(checkbox);
     label.append(genre);
     genreOptions.appendChild(label);
   });
 
-  const startButton = document.getElementById("start-button");
   genreOptions.addEventListener("change", () => {
     const selected = getSelectedGenres();
-    startButton.disabled = selected.length !== 5;
+    const remaining = 5 - selected.length;
+
+    if (remaining > 0) {
+      message.innerText = `あと ${remaining} 個選んでください`;
+      message.style.display = "block";
+      startButton.style.display = "none";
+    } else {
+      message.style.display = "none";
+      startButton.style.display = "inline-block";
+      startButton.disabled = false;
+      startButton.style.backgroundColor = "#000";
+      startButton.style.color = "#fff";
+    }
+
     document.querySelectorAll('input[name="genre"]').forEach(cb => {
       cb.disabled = selected.length >= 5 && !cb.checked;
     });
@@ -115,8 +135,8 @@ function showQuestion() {
 
 function answer(point) {
   const q = questions[current];
-  const level = parseInt(q.major_level) || 3; // デフォルト中間
-  const weight = 6 - level; // メジャー度が低いほど倍率↑
+  const level = parseInt(q.major_level) || 3;
+  const weight = 6 - level; // メジャー度が低いほどスコア倍率UP
   const adjusted = point * weight;
 
   if (!scores[q.genre]) scores[q.genre] = { score: 0, max: 0 };
@@ -175,7 +195,7 @@ function showResult() {
   result.style.display = "block";
 }
 
-setupGenreSelection();
+window.onload = setupGenreSelection;
 </script>
 </body>
 </html>
