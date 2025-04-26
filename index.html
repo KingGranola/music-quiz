@@ -53,7 +53,15 @@ function getSelectedGenres() {
 }
 
 function setupGenreSelection() {
-  const genreList = Object.keys(artistData);
+  // ユニークなジャンルを取得
+  const genreSet = new Set();
+  artistData.forEach(artist => {
+    if (artist.genre1) genreSet.add(artist.genre1);
+    if (artist.genre2) genreSet.add(artist.genre2);
+    if (artist.genre3) genreSet.add(artist.genre3);
+  });
+  const genreList = Array.from(genreSet).filter(genre => genre !== '');
+
   const genreOptions = document.getElementById("genre-options");
   const startButton = document.getElementById("start-button");
   const message = document.getElementById("genre-message");
@@ -110,18 +118,17 @@ function startQuiz(selectedGenres) {
   questions.length = 0;
 
   // 選択されたジャンルに属するアーティストをフィルタリング
-  const filteredArtists = [];
-  selectedGenres.forEach(genre => {
-    if (artistData[genre]) {
-      filteredArtists.push(...artistData[genre]);
-    }
-  });
+  const filteredArtists = artistData.filter(artist => 
+    selectedGenres.includes(artist.genre1) ||
+    selectedGenres.includes(artist.genre2) ||
+    selectedGenres.includes(artist.genre3)
+  );
 
   // ジャンルごとにアーティストをグループ化
   const artistsByGenre = {};
   selectedGenres.forEach(genre => {
     artistsByGenre[genre] = filteredArtists.filter(artist => 
-      artist.genre === genre
+      artist.genre1 === genre || artist.genre2 === genre || artist.genre3 === genre
     );
   });
 
