@@ -1,269 +1,43 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>音楽ジャンル診断</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音楽ジャンル診断</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/artistData.js"></script>
+    <script src="js/quiz.js"></script>
 </head>
 <body>
+    <!-- ジャンル選択画面 -->
+    <div id="genre-selection">
+        <h2>好きな音楽ジャンルを5つ選んでください</h2>
+        <div id="genre-options"></div>
+        <p id="genre-message"></p>
+        <button id="start-button" disabled>診断開始</button>
+    </div>
 
-<div id="genre-selection">
-  <h2>好きな音楽ジャンルを5つ選んでください</h2>
-  <div id="genre-options"></div>
-  <p id="genre-message"></p>
-  <button id="start-button" disabled style="display: none;">診断スタート</button>
-</div>
+    <!-- クイズ画面 -->
+    <div id="container" style="display: none;">
+        <h1>音楽ジャンル診断</h1>
+        <p id="genre"></p>
+        <p id="question"></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="progress-text"></p>
+        <div id="buttons">
+            <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
+            <button class="btn-level-3" onclick="answer(3)">曲を知っている（3曲以上知っている）</button>
+            <button class="btn-level-2" onclick="answer(2)">何かの曲を聴いたことがある</button>
+            <button class="btn-level-1" onclick="answer(1)">名前だけは知ってる</button>
+            <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
+        </div>
+        <canvas id="chart" style="display: none;"></canvas>
+        <div id="result"></div>
+    </div>
 
-<div id="container" style="display: none;">
-  <h1>音楽ジャンル診断</h1>
-
-  <div id="progress-container"><div id="progress-bar"></div></div>
-  <div id="progress-text">0 / 30問</div>
-
-  <div id="genre" class="genre-label"></div>
-  <div id="question">読み込み中...</div>
-
-  <div id="buttons">
-    <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
-    <button class="btn-level-3" onclick="answer(3)">まあまあ聴く（3曲以上知っている）</button>
-    <button class="btn-level-2" onclick="answer(2)">何か曲を聴いたことがある</button>
-    <button class="btn-level-1" onclick="answer(1)">名前だけは知っている </button>
-    <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
-  </div>
-
-  <canvas id="chart" style="display: none;"></canvas>
-  <div id="result" style="display: none;"></div>
-</div>
-
-<div id="version">ver 0.8 build 0001</div>
-
-<script src="js/artistData.js"></script>
-<script>
-let current = 0;
-let scores = {};
-const questions = [];
-const totalPerGenre = 6;
-
-function getSelectedGenres() {
-  return [...document.querySelectorAll('input[name="genre"]:checked')].map(cb => cb.value);
-}
-
-function setupGenreSelection() {
-  // ユニークなジャンルを取得
-  const genreSet = new Set();
-  artistData.forEach(artist => {
-    if (artist.genre1) genreSet.add(artist.genre1);
-    if (artist.genre2) genreSet.add(artist.genre2);
-    if (artist.genre3) genreSet.add(artist.genre3);
-  });
-  const genreList = Array.from(genreSet).filter(genre => genre !== '');
-
-  const genreOptions = document.getElementById("genre-options");
-  const startButton = document.getElementById("start-button");
-  const message = document.getElementById("genre-message");
-
-  genreList.forEach(genre => {
-    const label = document.createElement("label");
-    label.style.display = "inline-block";
-    label.style.margin = "10px";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.name = "genre";
-    checkbox.value = genre;
-    checkbox.style.marginRight = "8px";
-    checkbox.style.transform = "scale(1.4)";
-
-    label.appendChild(checkbox);
-    label.append(genre);
-    genreOptions.appendChild(label);
-  });
-
-  genreOptions.addEventListener("change", () => {
-    const selected = getSelectedGenres();
-    const remaining = 5 - selected.length;
-
-    if (remaining > 0) {
-      message.innerText = `あと ${remaining} 個選んでください`;
-      message.style.display = "block";
-      startButton.style.display = "none";
-    } else {
-      message.innerText = "";
-      message.style.display = "none";
-      startButton.style.display = "inline-block";
-      startButton.disabled = false;
-    }
-
-    document.querySelectorAll('input[name="genre"]').forEach(cb => {
-      cb.disabled = selected.length >= 5 && !cb.checked;
-    });
-  });
-
-  startButton.addEventListener("click", () => {
-    const selectedGenres = getSelectedGenres();
-    if (selectedGenres.length !== 5) return;
-    document.getElementById("genre-selection").style.display = "none";
-    document.getElementById("container").style.display = "block";
-    startQuiz(selectedGenres);
-  });
-}
-
-function startQuiz(selectedGenres) {
-  current = 0;
-  scores = {};
-  questions.length = 0;
-
-  // 選択されたジャンルに属するアーティストをフィルタリング
-  const filteredArtists = artistData.filter(artist => 
-    selectedGenres.includes(artist.genre1) ||
-    selectedGenres.includes(artist.genre2) ||
-    selectedGenres.includes(artist.genre3)
-  );
-
-  // ジャンルごとにアーティストをグループ化
-  const artistsByGenre = {};
-  selectedGenres.forEach(genre => {
-    artistsByGenre[genre] = filteredArtists.filter(artist => 
-      artist.genre1 === genre || artist.genre2 === genre || artist.genre3 === genre
-    );
-  });
-
-  // 各ジャンルから指定数のアーティストを選択
-  selectedGenres.forEach(genre => {
-    const pool = artistsByGenre[genre];
-    const selected = pool.sort(() => 0.5 - Math.random()).slice(0, totalPerGenre);
-    questions.push(...selected.map(artist => ({
-      ...artist,
-      currentGenre: genre // 出題時のジャンルを記録
-    })));
-  });
-
-  questions.sort(() => 0.5 - Math.random());
-  showQuestion();
-}
-
-function updateProgress() {
-  const percent = Math.floor((current / questions.length) * 100);
-  document.getElementById("progress-bar").style.width = `${percent}%`;
-  document.getElementById("progress-text").innerText = `${current} / ${questions.length}問`;
-}
-
-function showQuestion() {
-  if (current >= questions.length) return showResult();
-  const q = questions[current];
-  document.getElementById("genre").innerText = `ジャンル：${q.currentGenre}`;
-  document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
-  updateProgress();
-}
-
-function answer(point) {
-  const q = questions[current];
-  const weight = 6 - (parseInt(q.major_level) || 3);
-  const adjusted = point * weight;
-
-  if (!scores[q.currentGenre]) scores[q.currentGenre] = { score: 0, max: 0 };
-  scores[q.currentGenre].score += adjusted;
-  scores[q.currentGenre].max += 4 * weight;
-
-  current++;
-  showQuestion();
-}
-
-function showResult() {
-  document.getElementById("buttons").style.display = "none";
-  document.getElementById("progress-container").style.display = "none";
-  document.getElementById("progress-text").style.display = "none";
-  document.getElementById("genre").style.display = "none";
-  document.getElementById("question").style.display = "none";
-
-  const labels = Object.keys(scores);
-  const data = labels.map(g => Math.round((scores[g].score / scores[g].max) * 100));
-  const topGenre = labels[data.indexOf(Math.max(...data))];
-  const weakGenre = labels[data.indexOf(Math.min(...data))];
-
-  const ctx = document.getElementById("chart").getContext("2d");
-  document.getElementById("chart").style.display = "block";
-
-  new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [{
-        label: '知識度（%）',
-        data,
-        fill: true,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        pointBackgroundColor: 'rgba(75, 192, 192, 1)'
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: { r: { suggestedMin: 0, suggestedMax: 100 } }
-    }
-  });
-
-  const result = document.getElementById("result");
-  result.innerHTML = `
-    <h2>診断完了！</h2>
-    <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
-    <h3>ジャンル別の診断内訳</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ジャンル</th>
-          <th>得点率</th>
-          <th>評価</th>
-          <th>年代別内訳</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${labels.map((g, i) => `
-          <tr>
-            <td>${g}</td>
-            <td>${data[i]}%</td>
-            <td>${getEvaluation(data[i])}</td>
-            <td>${getEraBreakdown(g)}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-    <br>
-    <button onclick="location.reload()">もう一度診断する</button>
-  `;
-  result.style.display = "block";
-}
-
-function getEvaluation(score) {
-  if (score >= 80) return '⭐️⭐️⭐️⭐️⭐️';
-  if (score >= 60) return '⭐️⭐️⭐️⭐️';
-  if (score >= 40) return '⭐️⭐️⭐️';
-  if (score >= 20) return '⭐️⭐️';
-  return '⭐️';
-}
-
-function getEraBreakdown(genre) {
-  const eraScores = {};
-  questions.forEach(q => {
-    if (q.currentGenre === genre) {
-      if (!eraScores[q.era]) {
-        eraScores[q.era] = { total: 0, count: 0 };
-      }
-      eraScores[q.era].total += q.score;
-      eraScores[q.era].count += 1;
-    }
-  });
-
-  return Object.entries(eraScores)
-    .map(([era, data]) => `${era}: ${Math.round(data.total / data.count)}%`)
-    .join('<br>');
-}
-
-window.onload = setupGenreSelection;
-</script>
+    <div id="version">v1.0.0</div>
 </body>
 </html>
