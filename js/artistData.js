@@ -4470,7 +4470,7 @@ const artistData = {
       "artist_ja": "ザ・ホワイト・ストライプス",
       "artist_en": "The White Stripes",
       "genre": "ロック",
-      "major_level": 3
+      "major_level": 4
     },
     {
       "artist_ja": "AC/DC",
