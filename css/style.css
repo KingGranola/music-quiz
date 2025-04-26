@@ -326,3 +326,61 @@ table th, table td {
     padding: 10px 12px;
   }
 }
+
+/* スマートフォン向けのスタイル */
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  #genre {
+    font-size: 18px;
+  }
+
+  #question {
+    font-size: 20px;
+    margin: 15px 0;
+  }
+
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+    margin: 6px;
+    width: 100%;
+  }
+
+  #buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #progress-container {
+    height: 16px;
+  }
+
+  #progress-text {
+    font-size: 12px;
+  }
+
+  #result {
+    font-size: 16px;
+  }
+
+  table {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  table th, table td {
+    padding: 6px 8px;
+  }
+
+  #version {
+    font-size: 10px;
+  }
+}
