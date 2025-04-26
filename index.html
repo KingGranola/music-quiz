@@ -110,15 +110,18 @@ function startQuiz(selectedGenres) {
   questions.length = 0;
 
   // 選択されたジャンルに属するアーティストをフィルタリング
-  const filteredArtists = artistData.filter(artist => 
-    artist.genres.some(genre => selectedGenres.includes(genre))
-  );
+  const filteredArtists = [];
+  selectedGenres.forEach(genre => {
+    if (artistData[genre]) {
+      filteredArtists.push(...artistData[genre]);
+    }
+  });
 
   // ジャンルごとにアーティストをグループ化
   const artistsByGenre = {};
   selectedGenres.forEach(genre => {
     artistsByGenre[genre] = filteredArtists.filter(artist => 
-      artist.genres.includes(genre)
+      artist.genre === genre
     );
   });
 
