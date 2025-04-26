@@ -10,7 +10,7 @@
 <body>
 
 <div id="genre-selection">
-  <h2>ジャンルを5つ選んでください</h2>
+  <h2>好きな音楽ジャンルを5つ選んでください</h2>
   <div id="genre-options"></div>
   <p id="genre-message"></p>
   <button id="start-button" disabled style="display: none;">診断スタート</button>
@@ -26,10 +26,10 @@
   <div id="question">読み込み中...</div>
 
   <div id="buttons">
-    <button class="btn-level-4" onclick="answer(4)">よく聴く</button>
-    <button class="btn-level-3" onclick="answer(3)">まあまあ聴く</button>
-    <button class="btn-level-2" onclick="answer(2)">聴いたことがある</button>
-    <button class="btn-level-1" onclick="answer(1)">名前だけ知っている</button>
+    <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
+    <button class="btn-level-3" onclick="answer(3)">まあまあ聴く（3曲以上知っている）</button>
+    <button class="btn-level-2" onclick="answer(2)">何か曲を聴いたことがある</button>
+    <button class="btn-level-1" onclick="answer(1)">名前だけは知っている </button>
     <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
   </div>
 
@@ -44,7 +44,7 @@
 let current = 0;
 let scores = {};
 const questions = [];
-const totalPerGenre = 3;
+const totalPerGenre = 6;
 
 function getSelectedGenres() {
   return [...document.querySelectorAll('input[name="genre"]:checked')].map(cb => cb.value);
@@ -107,10 +107,27 @@ function startQuiz(selectedGenres) {
   scores = {};
   questions.length = 0;
 
+  // 選択されたジャンルに属するアーティストをフィルタリング
+  const filteredArtists = artistData.filter(artist => 
+    artist.genres.some(genre => selectedGenres.includes(genre))
+  );
+
+  // ジャンルごとにアーティストをグループ化
+  const artistsByGenre = {};
   selectedGenres.forEach(genre => {
-    const pool = artistData[genre];
+    artistsByGenre[genre] = filteredArtists.filter(artist => 
+      artist.genres.includes(genre)
+    );
+  });
+
+  // 各ジャンルから指定数のアーティストを選択
+  selectedGenres.forEach(genre => {
+    const pool = artistsByGenre[genre];
     const selected = pool.sort(() => 0.5 - Math.random()).slice(0, totalPerGenre);
-    questions.push(...selected);
+    questions.push(...selected.map(artist => ({
+      ...artist,
+      currentGenre: genre // 出題時のジャンルを記録
+    })));
   });
 
   questions.sort(() => 0.5 - Math.random());
@@ -126,7 +143,7 @@ function updateProgress() {
 function showQuestion() {
   if (current >= questions.length) return showResult();
   const q = questions[current];
-  document.getElementById("genre").innerText = `ジャンル：${q.genre}`;
+  document.getElementById("genre").innerText = `ジャンル：${q.currentGenre}`;
   document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
   updateProgress();
 }
@@ -136,9 +153,9 @@ function answer(point) {
   const weight = 6 - (parseInt(q.major_level) || 3);
   const adjusted = point * weight;
 
-  if (!scores[q.genre]) scores[q.genre] = { score: 0, max: 0 };
-  scores[q.genre].score += adjusted;
-  scores[q.genre].max += 4 * weight;
+  if (!scores[q.currentGenre]) scores[q.currentGenre] = { score: 0, max: 0 };
+  scores[q.currentGenre].score += adjusted;
+  scores[q.currentGenre].max += 4 * weight;
 
   current++;
   showQuestion();
@@ -183,13 +200,55 @@ function showResult() {
     <h2>診断完了！</h2>
     <p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はちょっと苦手かも？</strong></p>
     <h3>ジャンル別の診断内訳</h3>
-    <table style="margin:auto;"><tr><th>ジャンル</th><th>得点率</th></tr>
+    <table>
+      <thead>
+        <tr>
+          <th>ジャンル</th>
+          <th>得点率</th>
+          <th>評価</th>
+          <th>年代別内訳</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${labels.map((g, i) => `
+          <tr>
+            <td>${g}</td>
+            <td>${data[i]}%</td>
+            <td>${getEvaluation(data[i])}</td>
+            <td>${getEraBreakdown(g)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <br>
+    <button onclick="location.reload()">もう一度診断する</button>
   `;
-  labels.forEach((g, i) => {
-    result.innerHTML += `<tr><td>${g}</td><td>${data[i]}%</td></tr>`;
-  });
-  result.innerHTML += `</table><br><button onclick="location.reload()">もう一度診断する</button>`;
   result.style.display = "block";
+}
+
+function getEvaluation(score) {
+  if (score >= 80) return '⭐️⭐️⭐️⭐️⭐️';
+  if (score >= 60) return '⭐️⭐️⭐️⭐️';
+  if (score >= 40) return '⭐️⭐️⭐️';
+  if (score >= 20) return '⭐️⭐️';
+  return '⭐️';
+}
+
+function getEraBreakdown(genre) {
+  const eraScores = {};
+  questions.forEach(q => {
+    if (q.currentGenre === genre) {
+      if (!eraScores[q.era]) {
+        eraScores[q.era] = { total: 0, count: 0 };
+      }
+      eraScores[q.era].total += q.score;
+      eraScores[q.era].count += 1;
+    }
+  });
+
+  return Object.entries(eraScores)
+    .map(([era, data]) => `${era}: ${Math.round(data.total / data.count)}%`)
+    .join('<br>');
 }
 
 window.onload = setupGenreSelection;
