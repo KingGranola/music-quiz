@@ -198,6 +198,38 @@ function startQuiz(selectedGenres) {
     questions.push(...selected);
   });
 
+  // 問題数が不足する場合、残りの問題を追加
+  if (questions.length < TOTAL_QUESTIONS) {
+    const remainingQuestions = TOTAL_QUESTIONS - questions.length;
+    const allArtists = filteredArtists.filter(artist => 
+      !questions.some(q => q.artist_id === artist.artist_id)
+    );
+    
+    const weightedPool = allArtists.map(artist => ({
+      artist,
+      weight: calculateGenreScore(artist, selectedGenres)
+    }));
+    
+    for (let i = 0; i < remainingQuestions && weightedPool.length > 0; i++) {
+      const totalWeight = weightedPool.reduce((sum, item) => sum + item.weight, 0);
+      let random = Math.random() * totalWeight;
+      let index = 0;
+      
+      while (random > weightedPool[index].weight) {
+        random -= weightedPool[index].weight;
+        index++;
+      }
+      
+      const selectedArtist = weightedPool[index].artist;
+      questions.push({
+        ...selectedArtist,
+        currentGenre: selectedArtist.genre1,
+        isAlbumCover: false
+      });
+      weightedPool.splice(index, 1);
+    }
+  }
+
   // 質問をシャッフル
   questions.sort(() => 0.5 - Math.random());
   showQuestion();
@@ -205,7 +237,22 @@ function startQuiz(selectedGenres) {
 
 function updateProgress() {
     const percent = Math.floor((currentQuestion / TOTAL_QUESTIONS) * 100);
-    document.getElementById("progress-bar").style.width = `${percent}%`;
+    const progressBar = document.getElementById("progress-bar");
+    progressBar.style.width = `${percent}%`;
+    
+    // 正解数に応じて色を変更
+    const correctCount = Object.values(genreScores).reduce((sum, genre) => sum + (genre.score || 0), 0);
+    const maxScore = Object.values(genreScores).reduce((sum, genre) => sum + (genre.max || 0), 0);
+    const scorePercent = (correctCount / maxScore) * 100;
+    
+    progressBar.className = '';
+    if (scorePercent >= 60) {
+        progressBar.classList.add('good');
+    } else if (scorePercent >= 30) {
+        progressBar.classList.add('normal');
+    } else {
+        progressBar.classList.add('bad');
+    }
     
     // 進捗メッセージの生成
     let progressMessage = `${currentQuestion} / ${TOTAL_QUESTIONS}問`;

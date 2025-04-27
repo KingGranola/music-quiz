@@ -1,9 +1,11 @@
+/* 基本スタイル */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f5f5f5;
+  color: #333;
 }
 
 h1 {
@@ -35,7 +37,7 @@ button {
   min-width: 200px;
   color: white;
 }
-/*aaaa */
+
 .btn-level-4 { background-color: #000000; color: white; }
 .btn-level-3 { background-color: #228B22; }
 .btn-level-2 { background-color: #1E90FF; }
@@ -65,33 +67,23 @@ canvas {
 
 #progress-bar {
   height: 100%;
-  background: linear-gradient(45deg, #4CAF50, #45a049);
+  background: #4CAF50;
   border-radius: 12px;
-  transition: width 0.4s ease;
+  transition: width 0.4s ease, background-color 0.4s ease;
   position: relative;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-#progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.1) 25%,
-    rgba(255,255,255,0.2) 50%,
-    rgba(255,255,255,0.1) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+#progress-bar.good {
+  background: #4CAF50;
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+#progress-bar.normal {
+  background: #FFC107;
+}
+
+#progress-bar.bad {
+  background: #F44336;
 }
 
 #progress-text {
@@ -102,20 +94,6 @@ canvas {
   margin: 10px 0;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
-
-.share-btn {
-  display: inline-block;
-  margin: 10px;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-}
-
-.share-btn.twitter { background-color: #1DA1F2; }
-.share-btn.line { background-color: #00C300; }
 
 #version {
   position: fixed;
@@ -135,10 +113,12 @@ table {
   margin-top: 20px;
   border-collapse: collapse;
 }
+
 table th, table td {
   padding: 8px 12px;
   border: 1px solid #ccc;
 }
+
 #start-button {
   font-size: 16px;
   padding: 12px 20px;
@@ -191,82 +171,11 @@ table th, table td {
   cursor: pointer;
 }
 
-#genre-options input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.2);
-}
-
 #container {
   background: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#progress-container {
-  width: 100%;
-  height: 10px;
-  background: #eee;
-  border-radius: 5px;
-  margin: 10px 0;
-}
-
-#progress-bar {
-  height: 100%;
-  background: #4CAF50;
-  border-radius: 5px;
-  transition: width 0.3s;
-}
-
-#buttons {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin: 20px 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.btn-level-4, .btn-level-3, .btn-level-2, .btn-level-1, .btn-level-0 {
-  padding: 12px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.1s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-level-4 { background: #2196F3; }
-.btn-level-3 { background: #4CAF50; }
-.btn-level-2 { background: #FFC107; }
-.btn-level-1 { background: #FF9800; }
-.btn-level-0 { background: #F44336; }
-
-.btn-level-4:active, .btn-level-3:active, .btn-level-2:active, 
-.btn-level-1:active, .btn-level-0:active {
-  transform: scale(0.98);
-}
-
-#question {
-  font-size: 18px;
-  margin: 20px 0;
-  line-height: 1.4;
-}
-
-#genre {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 10px;
 }
 
 #result {
@@ -276,28 +185,9 @@ table th, table td {
   margin-top: 20px;
 }
 
-#result table {
-  width: 100%;
-  max-width: 500px;
-  margin: 20px auto;
-  border-collapse: collapse;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#result th, #result td {
-  padding: 12px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
 #result th {
   background-color: #f5f5f5;
   font-weight: bold;
-}
-
-#result tr:last-child td {
-  border-bottom: none;
 }
 
 #result tr:hover {
@@ -320,56 +210,11 @@ table th, table td {
   line-height: 1.5;
 }
 
-#result button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  font-size: 1.1em;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-#result button:hover {
-  background-color: #45a049;
-}
-
-#start-button {
-  margin: 8px 0;
-  padding: 8px 16px;
-  font-size: 1em;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#start-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-#version {
-  text-align: center;
+.album-hint {
+  font-size: 14px;
   color: #666;
-  font-size: 12px;
-  margin-top: 20px;
-}
-
-@media (min-width: 600px) {
-  #buttons {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 599px) {
-  .btn-level-4, .btn-level-3, .btn-level-2, .btn-level-1, .btn-level-0 {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
+  margin-top: 10px;
+  text-align: center;
 }
 
 /* スマートフォン向けのスタイル */
@@ -467,22 +312,4 @@ table th, table td {
   .album-hint {
     font-size: 12px;
   }
-}
-
-/* アルバムジャケットクイズのスタイル */
-.album-hint {
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
-  text-align: center;
-}
-
-#question img {
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
-}
-
-#question img:hover {
-  transform: scale(1.05);
 }
