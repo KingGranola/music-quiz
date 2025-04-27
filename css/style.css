@@ -459,4 +459,30 @@ table th, table td {
     padding: 6px 12px;
     font-size: 0.9em;
   }
+
+  #question img {
+    max-width: 250px;
+  }
+  
+  .album-hint {
+    font-size: 12px;
+  }
+}
+
+/* アルバムジャケットクイズのスタイル */
+.album-hint {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  text-align: center;
+}
+
+#question img {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+#question img:hover {
+  transform: scale(1.05);
 }

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アルバムジャケットクイズ（テスト版）</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .quiz-container {
+            text-align: center;
+        }
+        .album-cover {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .option {
+            padding: 15px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+        .score {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        .next-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        .next-button:hover {
+            background-color: #45a049;
+        }
+        .loading {
+            text-align: center;
+            margin: 50px 0;
+        }
+        .genre-filter {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-container">
+            <h1>アルバムジャケットクイズ</h1>
+            <div class="score">スコア: <span id="score">0</span></div>
+            <select id="genre-filter" class="genre-filter">
+                <option value="all">すべてのジャンル</option>
+                <option value="J-POP">J-POP</option>
+                <option value="ポップス">ポップス</option>
+                <option value="ジャズ">ジャズ</option>
+                <option value="歌謡曲">歌謡曲</option>
+            </select>
+            <div id="quiz-area">
+                <img id="album-cover" class="album-cover" src="" alt="アルバムジャケット">
+                <div class="options" id="options"></div>
+                <div class="result" id="result"></div>
+                <button class="next-button" id="next-button" style="display: none;">次の問題</button>
+            </div>
+            <div id="loading" class="loading">問題を読み込み中...</div>
+        </div>
+    </div>
+
+    <script src="js/artistData.js"></script>
+    <script>
+        let currentQuestion = null;
+        let score = 0;
+        let questions = [];
+        const NUM_OPTIONS = 4;
+
+        // 問題を生成
+        function generateQuestions() {
+            const selectedGenre = document.getElementById('genre-filter').value;
+            console.log('Selected genre:', selectedGenre);
+            console.log('Total artists:', artistData.length);
+            
+            const filteredArtists = artistData
+                .filter(artist => artist.has_album_cover === 1)
+                .filter(artist => selectedGenre === 'all' || artist.genre1 === selectedGenre);
+            
+            console.log('Filtered artists:', filteredArtists.length);
+            
+            questions = filteredArtists.map(artist => {
+                console.log('Artist:', artist.artist_ja, 'Album image:', artist.album_image);
+                return {
+                    image: artist.album_image ? `images/albums/${artist.album_image}` : '',
+                    correctAnswer: artist.artist_ja,
+                    options: []
+                };
+            });
+
+            // 各問題の選択肢を生成
+            questions.forEach(question => {
+                const options = [question.correctAnswer];
+                const currentArtist = artistData.find(a => a.artist_ja === question.correctAnswer);
+                const sameGenreArtists = artistData.filter(a => 
+                    a.artist_ja !== question.correctAnswer && 
+                    a.genre1 === currentArtist.genre1
+                );
+                
+                while (options.length < NUM_OPTIONS && sameGenreArtists.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * sameGenreArtists.length);
+                    const randomArtist = sameGenreArtists[randomIndex];
+                    if (!options.includes(randomArtist.artist_ja)) {
+                        options.push(randomArtist.artist_ja);
+                    }
+                    sameGenreArtists.splice(randomIndex, 1);
+                }
+                
+                // 選択肢が足りない場合は他のジャンルから追加
+                while (options.length < NUM_OPTIONS) {
+                    const randomArtist = artistData[Math.floor(Math.random() * artistData.length)];
+                    if (!options.includes(randomArtist.artist_ja)) {
+                        options.push(randomArtist.artist_ja);
+                    }
+                }
+                
+                // 選択肢をシャッフル
+                question.options = options.sort(() => Math.random() - 0.5);
+            });
+
+            // 問題をシャッフル
+            questions = questions.sort(() => Math.random() - 0.5);
+        }
+
+        // 問題を表示
+        function showQuestion() {
+            if (questions.length === 0) {
+                document.getElementById('quiz-area').innerHTML = '<h2>クイズ終了！</h2><p>スコア: ' + score + '</p>';
+                return;
+            }
+
+            currentQuestion = questions.pop();
+            document.getElementById('album-cover').src = currentQuestion.image;
+            document.getElementById('result').textContent = '';
+            document.getElementById('next-button').style.display = 'none';
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const artist = artistData.find(a => a.artist_ja === option);
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = `${artist.artist_ja} (${artist.artist_en})`;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // 答えをチェック
+        function checkAnswer(selectedAnswer) {
+            const result = document.getElementById('result');
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach(option => {
+                option.disabled = true;
+                const artistJa = option.textContent.split(' (')[0];
+                if (artistJa === currentQuestion.correctAnswer) {
+                    option.style.backgroundColor = '#4CAF50';
+                    option.style.color = 'white';
+                } else if (artistJa === selectedAnswer && selectedAnswer !== currentQuestion.correctAnswer) {
+                    option.style.backgroundColor = '#f44336';
+                    option.style.color = 'white';
+                }
+            });
+
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                result.textContent = '正解！';
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                const correctArtist = artistData.find(a => a.artist_ja === currentQuestion.correctAnswer);
+                result.textContent = `不正解。正解は ${correctArtist.artist_ja} (${correctArtist.artist_en})`;
+            }
+
+            document.getElementById('next-button').style.display = 'block';
+        }
+
+        // 初期化
+        window.onload = function() {
+            console.log('Window loaded');
+            console.log('artistData:', artistData);
+            
+            try {
+                generateQuestions();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('quiz-area').style.display = 'block';
+                showQuestion();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = 'エラーが発生しました: ' + error.message;
+            }
+
+            document.getElementById('next-button').onclick = showQuestion;
+            document.getElementById('genre-filter').onchange = function() {
+                score = 0;
+                document.getElementById('score').textContent = score;
+                generateQuestions();
+                showQuestion();
+            };
+        };
+    </script>
+</body>
+</html> 

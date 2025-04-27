@@ -1,42 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音楽ジャンル診断</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/artistData.js"></script>
-    <script src="js/quiz.js"></script>
+  <title>音楽ジャンル診断</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/artistData.js"></script>
+    <script src="./js/quiz.js"></script>
+    <script>
+        // ファイルの読み込みエラーをハンドリング
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+            return false;
+        };
+
+        // ページ読み込み完了時にジャンル選択を初期化
+        window.onload = function() {
+            setupGenreSelection();
+        };
+    </script>
 </head>
 <body>
     <!-- ジャンル選択画面 -->
-    <div id="genre-selection">
+<div id="genre-selection">
         <h2>好きな音楽ジャンルを5つ選んでください</h2>
-        <div id="genre-options"></div>
-        <p id="genre-message"></p>
+  <div id="genre-options"></div>
+  <p id="genre-message"></p>
         <button id="start-button" disabled>診断開始</button>
-    </div>
+</div>
 
     <!-- クイズ画面 -->
-    <div id="container" style="display: none;">
-        <h1>音楽ジャンル診断</h1>
+<div id="container" style="display: none;">
+  <h1>音楽ジャンル診断</h1>
         <p id="genre"></p>
         <p id="question"></p>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
         <p id="progress-text"></p>
-        <div id="buttons">
+  <div id="buttons">
             <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
             <button class="btn-level-3" onclick="answer(3)">曲を知っている（3曲以上知っている）</button>
             <button class="btn-level-2" onclick="answer(2)">何かの曲を聴いたことがある</button>
             <button class="btn-level-1" onclick="answer(1)">名前だけは知ってる</button>
-            <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
-        </div>
-        <canvas id="chart" style="display: none;"></canvas>
+    <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
+  </div>
+  <canvas id="chart" style="display: none;"></canvas>
         <div id="result"></div>
-    </div>
+</div>
 
     <div id="version">v1.0.0</div>
 </body>

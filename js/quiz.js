@@ -4,6 +4,9 @@ const questions = [];
 const QUESTIONS_PER_GENRE = 6;  // 1ジャンルあたり6問（合計30問）
 const TOTAL_QUESTIONS = 30;     // 総問題数
 
+// アルバムジャケットクイズのフラグ
+let isAlbumCoverQuestion = false;
+
 function getUsedGenres() {
   const genreSet = new Set();
   artistData.forEach(artist => {
@@ -165,6 +168,7 @@ function startQuiz(selectedGenres) {
     );
   });
 
+  // 通常の質問を追加
   selectedGenres.forEach(genre => {
     const pool = artistsByGenre[genre];
     const weightedPool = pool.map(artist => ({
@@ -185,7 +189,8 @@ function startQuiz(selectedGenres) {
       
       selected.push({
         ...weightedPool[index].artist,
-        currentGenre: genre
+        currentGenre: genre,
+        isAlbumCover: false
       });
       weightedPool.splice(index, 1);
     }
@@ -193,6 +198,7 @@ function startQuiz(selectedGenres) {
     questions.push(...selected);
   });
 
+  // 質問をシャッフル
   questions.sort(() => 0.5 - Math.random());
   showQuestion();
 }
@@ -224,7 +230,31 @@ function showQuestion() {
   const genres = new Set([q.genre1, q.genre2, q.genre3].filter(g => g));
   
   document.getElementById("genre").innerText = `ジャンル：${Array.from(genres).join('、')}`;
-  document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
+  
+  if (q.isAlbumCover) {
+    isAlbumCoverQuestion = true;
+    document.getElementById("question").innerHTML = `
+      <p>このアルバムジャケットのアーティストは誰？</p>
+      <img src="images/albums/${q.albumInfo.image}" alt="Album Cover" style="max-width: 300px; margin: 20px auto; display: block;">
+      <p class="album-hint">ヒント：${q.albumInfo.release_year}年リリース『${q.albumInfo.name}』</p>
+    `;
+    document.getElementById("buttons").innerHTML = q.choices.map((choice, index) => `
+      <button class="btn-level-${choice.isCorrect ? '4' : '2'}" onclick="answer(${choice.isCorrect ? 4 : 0})">
+        ${choice.artist.artist_ja}（${choice.artist.artist_en}）
+      </button>
+    `).join('');
+  } else {
+    isAlbumCoverQuestion = false;
+    document.getElementById("question").innerText = `${q.artist_ja}（${q.artist_en}）をどれくらい知ってる？`;
+    document.getElementById("buttons").innerHTML = `
+      <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
+      <button class="btn-level-3" onclick="answer(3)">曲を知っている（3曲以上知っている）</button>
+      <button class="btn-level-2" onclick="answer(2)">何かの曲を聴いたことがある</button>
+      <button class="btn-level-1" onclick="answer(1)">名前だけは知ってる</button>
+      <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
+    `;
+  }
+  
   updateProgress();
 }
 
