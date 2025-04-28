@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ジャンル別 音楽知識診断</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>ジャンル別 音楽知識診断</title>
+    <!-- Chart.js を先に読み込み (defer) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <!-- CSS を読み込み -->
     <link rel="stylesheet" href="./css/style.css">
-    <script src="./js/artistData.js"></script>
-    <script src="./js/quiz.js"></script>
+    <!-- JavaScript ファイルを defer で読み込み (HTML解析をブロックしない) -->
+    <script src="./js/artistData.js" defer></script>
+    <script src="./js/quiz.js" defer></script>
     <script>
         // ファイルの読み込みエラーをハンドリング
         window.onerror = function(msg, url, lineNo, columnNo, error) {
             console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
-            return false;
-        };
-
-        // ページ読み込み完了時にジャンル選択を初期化
-        window.onload = function() {
-            setupGenreSelection();
+            // エラー発生時にユーザーに通知するなどの処理を追加しても良い
+            // alert('エラーが発生しました。ページを再読み込みしてください。');
+            return false; // デフォルトのエラー処理を抑制しない場合は true
         };
     </script>
 </head>
 <body>
-    <!-- ジャンル選択画面 -->
-<div id="genre-selection">
-        <h2>好きな音楽ジャンルを5つ選んでください</h2>
-  <div id="genre-options"></div>
-  <p id="genre-message"></p>
-        <button id="start-button" disabled>診断開始</button>
-</div>
+    <!-- ジャンル選択画面 (初期表示) -->
+    <div id="genre-selection">
+        <h2>好きな音楽ジャンルを3つ以上選んでください</h2>
+        <div id="genre-options">
+            <!-- ここにジャンル選択肢が quiz.js によって動的に生成される -->
+        </div>
+        <!-- メッセージ表示エリア (初期は非表示 or メッセージ表示) -->
+        <p id="genre-message" class="hidden"></p>
+        <!-- スタートボタン (初期は非表示 & disabled) -->
+        <button id="start-button" class="hidden" disabled>診断開始</button>
+    </div>
 
-    <!-- クイズ画面 -->
-<div id="container" style="display: none;">
-  <h1>ジャンル別 音楽知識診断</h1>
+    <!-- クイズ画面 (初期状態は hidden クラスで非表示) -->
+    <div id="container" class="hidden">
+        <h1>ジャンル別 音楽知識診断</h1>
+        <!-- 現在のジャンル表示用 -->
         <p id="genre"></p>
+        <!-- 問題文表示用 -->
         <p id="question"></p>
+        <!-- プログレスバー -->
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
+        <!-- 進捗テキスト (例: 1/15) -->
         <p id="progress-text"></p>
-  <div id="buttons">
-            <button class="btn-level-4" onclick="answer(4)">よく聴く（5曲以上知っている）</button>
-            <button class="btn-level-3" onclick="answer(3)">曲を知っている（3曲以上知っている）</button>
-            <button class="btn-level-2" onclick="answer(2)">何かの曲を聴いたことがある</button>
-            <button class="btn-level-1" onclick="answer(1)">名前だけは知ってる</button>
-    <button class="btn-level-0" onclick="answer(0)">全く知らない</button>
-  </div>
-  <canvas id="chart" style="display: none;"></canvas>
-        <div id="result"></div>
-</div>
+        <!-- 回答ボタン表示エリア -->
+        <div id="buttons">
+            <!-- ここに回答ボタンが quiz.js によって動的に生成される -->
+        </div>
+        <!-- 結果表示用グラフ (初期状態は hidden クラスで非表示) -->
+        <canvas id="chart" class="hidden" role="img" aria-label="診断結果グラフ"></canvas>
+        <!-- テキストでの結果表示用エリア -->
+        <div id="result" class="hidden"></div>
+    </div>
 
-    <div id="version">v0.9 build003</div>
+    <!-- バージョン情報 -->
+    <div id="version">v0.9 build003 (Updated)</div>
+
 </body>
 </html>

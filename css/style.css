@@ -1,343 +1,268 @@
-/* 基本スタイル */
+/* 基本的なスタイルリセット (任意) */
+body, h1, h2, h3, p, ul, li, button, label, input, table {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
+  line-height: 1.6;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #f4f4f4;
   color: #333;
 }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-#genre {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #444;
-}
-
-#question {
-  font-size: 22px;
-  margin: 20px 0;
+/* --- 共通 --- */
+.hidden {
+  display: none !important; /* !important で確実に非表示にする */
 }
 
 button {
-  padding: 18px 24px;
-  margin: 10px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: none;
   cursor: pointer;
-  width: 90%;
-  max-width: 320px;
-  min-width: 200px;
-  color: white;
-  min-height: 64px;
-}
-
-.btn-level-4 { background-color: #000000; color: white; }
-.btn-level-3 { background-color: #228B22; }
-.btn-level-2 { background-color: #1E90FF; }
-.btn-level-1 { background-color: #FFA500; color: black; }
-.btn-level-0 { background-color: #B22222; }
-
-canvas {
-  max-width: 100%;
-  margin-top: 30px;
-}
-
-#result {
-  margin-top: 20px;
-  font-size: 18px;
-}
-
-#progress-container {
-  width: 100%;
-  height: 24px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  margin: 20px 0;
-  position: relative;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-
-#progress-bar {
-  height: 100%;
-  background: #4CAF50;
-  border-radius: 12px;
-  transition: width 0.4s ease, background-color 0.4s ease;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#progress-bar.good {
-  background: #4CAF50;
-}
-
-#progress-bar.normal {
-  background: #FFC107;
-}
-
-#progress-bar.bad {
-  background: #F44336;
-}
-
-#progress-text {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin: 10px 0;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-}
-
-#version {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  font-size: 12px;
-  color: #888;
-  z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 5px 10px;
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #5c67f2;
+  color: white;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
 }
 
-table {
-  width: 80%;
-  margin-top: 20px;
-  border-collapse: collapse;
+button:hover:not(:disabled) {
+  background-color: #4a54cc;
 }
 
-table th, table td {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-#start-button {
-  font-size: 16px;
-  padding: 16px 24px;
-  border-radius: 6px;
-  border: none;
-  background-color: #000;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-  min-height: 60px;
-  width: 80%;
-  max-width: 320px;
-}
-
-#genre-message {
-  font-size: 16px;
-  margin: 10px 0;
-  color: #d33;
-}
-
-#genre-options input[type="checkbox"] {
-  transform: scale(1.4);
-  margin-right: 6px;
-}
-
+/* --- ジャンル選択画面 --- */
 #genre-selection {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   max-width: 800px;
-  margin: 0 auto;
-  padding: 10px;
-  text-align: center;
+  margin: 20px auto;
 }
 
 #genre-selection h2 {
-  font-size: 1.2em;
-  margin: 10px 0;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 #genre-options {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin: 10px 0;
+  margin-bottom: 15px;
 }
 
-#genre-options label {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 8px;
-  margin: 2px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
+.genre-label {
+  display: inline-block;
+  margin: 8px 12px;
   cursor: pointer;
+  font-size: 1.1em;
 }
 
-#container {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.genre-checkbox {
+  margin-right: 8px;
+  transform: scale(1.3);
+  vertical-align: middle; /* チェックボックスとテキストの位置を調整 */
 }
 
-#result {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
+.explanation {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  border-left: 5px solid #adb5bd;
+  font-size: 0.9em;
 }
 
-#result th {
-  background-color: #f5f5f5;
+.explanation p {
+  margin-bottom: 5px;
+}
+
+#genre-message {
+  color: #dc3545; /* 赤色 */
   font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
 }
 
-#result tr:hover {
-  background-color: #f9f9f9;
+#start-button {
+  display: block; /* 中央揃えのため */
+  margin: 20px auto 0; /* 上マージンを追加 */
+  padding: 12px 25px;
+  font-size: 1.2em;
+}
+
+
+/* --- クイズ画面 --- */
+#container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 800px;
+  margin: 20px auto;
+  text-align: center; /* コンテナ内の要素を中央揃え */
+}
+
+#container h1 {
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+#genre {
+  font-style: italic;
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+#question {
+  font-size: 1.3em;
+  margin-bottom: 20px;
+  min-height: 3em; /* 問題文の高さ変動に対応 */
+}
+
+/* プログレスバー */
+#progress-container {
+  width: 90%;
+  max-width: 600px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+  margin: 15px auto; /* 中央揃え */
+  overflow: hidden; /* 角丸のため */
+}
+
+#progress-bar {
+  width: 0%; /* 初期状態 */
+  height: 25px;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 25px;
+  color: white;
+  font-weight: bold;
+  transition: width 0.4s ease, background-color 0.4s ease; /* 背景色もアニメーション */
+}
+
+/* プログレスバーの色分け */
+.progress-bar.good { background-color: #28a745; } /* 緑 */
+.progress-bar.normal { background-color: #ffc107; color: #333; } /* 黄 */
+.progress-bar.bad { background-color: #dc3545; } /* 赤 */
+
+#progress-text {
+  margin-bottom: 20px;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+/* 回答ボタン */
+#buttons {
+  margin-bottom: 20px;
+}
+
+#buttons button {
+  display: block; /* 縦に並べる */
+  width: 80%;
+  max-width: 400px;
+  margin: 8px auto; /* 中央揃え */
+  font-size: 1.1em;
+  background-color: #6c757d; /* デフォルト色 */
+}
+/* ボタンの色分け (例) */
+#buttons .btn-level-4 { background-color: #007bff; }
+#buttons .btn-level-3 { background-color: #17a2b8; }
+#buttons .btn-level-2 { background-color: #ffc107; color: #333; }
+#buttons .btn-level-1 { background-color: #fd7e14; }
+#buttons .btn-level-0 { background-color: #dc3545; }
+
+#buttons button:hover:not(:disabled) {
+  opacity: 0.85; /* ホバー時の透明度変更 */
+}
+
+
+/* --- 結果表示 --- */
+#chart {
+  display: block; /* Canvasはデフォルトでインライン */
+  max-width: 500px; /* 最大幅 */
+  max-height: 500px; /* 最大高さ */
+  width: 100%;      /* 親要素に合わせる */
+  height: auto;     /* アスペクト比を維持 */
+  margin: 30px auto; /* 上下のマージン */
 }
 
 #result h2 {
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 15px;
 }
-
 #result h3 {
-  margin: 30px 0 15px;
-  color: #555;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 5px;
 }
-
 #result p {
-  margin: 15px 0;
+  margin-bottom: 10px;
+}
+#result strong {
   font-size: 1.1em;
-  line-height: 1.5;
 }
 
-.album-hint {
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
+/* 結果テーブル */
+.table-container {
+  overflow-x: auto; /* テーブルがはみ出す場合にスクロール */
+  margin-bottom: 20px;
+}
+#result table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+#result th, #result td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
   text-align: center;
 }
+#result th {
+  background-color: #f8f9fa;
+}
+#result tbody tr:nth-child(odd) {
+  background-color: #f8f9fa; /* 縞模様 */
+}
 
-#result button {
-  background-color: #000000;
-  color: white;
-  padding: 16px 24px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
+/* おすすめアーティストリスト */
+#result ul {
+  list-style: none; /* 点を削除 */
+  padding-left: 0;
+  text-align: left; /* 左揃え */
+  max-width: 500px;
+  margin: 0 auto 20px; /* 中央揃え */
+}
+#result li {
+  background-color: #e9ecef;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+#reload-button {
   margin-top: 20px;
-  width: 80%;
-  min-width: 200px;
-  min-height: 60px;
+  background-color: #28a745; /* 緑色 */
+}
+#reload-button:hover {
+  background-color: #218838;
 }
 
-#result button:hover {
-  background-color: #333333;
-}
 
-/* スマートフォン向けのスタイル */
-@media screen and (max-width: 480px) {
-  body {
-    padding: 10px;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  #genre {
-    font-size: 18px;
-  }
-
-  #question {
-    font-size: 20px;
-    margin: 15px 0;
-  }
-
-  button {
-    padding: 16px 20px;
-    font-size: 15px;
-    margin: 8px;
-    min-height: 56px;
-  }
-
-  #buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #progress-container {
-    height: 16px;
-  }
-
-  #progress-text {
-    font-size: 12px;
-  }
-
-  #result {
-    font-size: 16px;
-  }
-
-  table {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  table th, table td {
-    padding: 6px 8px;
-  }
-
-  #version {
-    font-size: 10px;
-  }
-
-  #genre-selection {
-    padding: 5px;
-  }
-
-  #genre-selection h2 {
-    font-size: 1.1em;
-    margin: 5px 0;
-  }
-
-  #genre-options {
-    gap: 4px;
-    margin: 5px 0;
-  }
-
-  #genre-options label {
-    padding: 3px 6px;
-    margin: 1px;
-    font-size: 0.9em;
-  }
-
-  #genre-message {
-    margin: 5px 0;
-    font-size: 0.8em;
-  }
-
-  #start-button {
-    padding: 14px 20px;
-    font-size: 15px;
-    min-height: 54px;
-  }
-
-  #result button {
-    padding: 14px 20px;
-    font-size: 15px;
-    min-height: 54px;
-  }
-
-  #question img {
-    max-width: 250px;
-  }
-  
-  .album-hint {
-    font-size: 12px;
-  }
+/* --- バージョン情報 --- */
+#version {
+  text-align: right;
+  font-size: 0.8em;
+  color: #6c757d;
+  margin-top: 30px;
 }
