@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ジャンル別 音楽知識診断</title>
     <!-- Chart.js を先に読み込み (defer) -->
+    <!-- Chart.js は外部ライブラリなので、HTMLに残しておくのが一般的です -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <!-- CSS を読み込み -->
     <link rel="stylesheet" href="./css/style.css">
-    <!-- JavaScript ファイルを defer で読み込み (HTML解析をブロックしない) -->
-    <script src="./js/artistData.js" defer></script>
-    <script src="./js/quiz.js" defer></script>
+
+    <!-- !!! モジュール化されたJavaScriptのエントリーポイントを読み込む !!! -->
+    <!-- type="module" を指定することで、import/export が使えるようになります -->
+    <!-- artistData.js や他の分割されたJSファイルは main.js から import されるので、ここでは不要です -->
+    <script src="./js/main.js" type="module"></script>
+
+    <!-- エラーハンドリング用のスクリプト (これは残してもOK) -->
     <script>
-        // ファイルの読み込みエラーをハンドリング
         window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
-            // エラー発生時にユーザーに通知するなどの処理を追加しても良い
-            // alert('エラーが発生しました。ページを再読み込みしてください。');
-            return false; // デフォルトのエラー処理を抑制しない場合は true
+            console.error('Unhandled Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+            // 必要であればユーザーにエラーを通知
+            // alert('予期せぬエラーが発生しました。ページを再読み込みするか、開発者にご連絡ください。');
+            return false;
         };
     </script>
 </head>
@@ -25,9 +29,11 @@
     <!-- ジャンル選択画面 (初期表示) -->
     <div id="genre-selection">
         <h2>好きな音楽ジャンルを3つ以上選んでください</h2>
+        <!-- ジャンル選択肢の表示エリア -->
         <div id="genre-options">
-            <!-- ここにジャンル選択肢が quiz.js によって動的に生成される -->
+            <!-- ここにジャンル選択肢が uiController.js によって動的に生成される -->
         </div>
+        <!-- 説明文表示エリア (uiController.js が生成) -->
         <!-- メッセージ表示エリア (初期は非表示 or メッセージ表示) -->
         <p id="genre-message" class="hidden"></p>
         <!-- スタートボタン (初期は非表示 & disabled) -->
@@ -49,7 +55,7 @@
         <p id="progress-text"></p>
         <!-- 回答ボタン表示エリア -->
         <div id="buttons">
-            <!-- ここに回答ボタンが quiz.js によって動的に生成される -->
+            <!-- ここに回答ボタンが uiController.js によって動的に生成される -->
         </div>
         <!-- 結果表示用グラフ (初期状態は hidden クラスで非表示) -->
         <canvas id="chart" class="hidden" role="img" aria-label="診断結果グラフ"></canvas>
@@ -58,7 +64,7 @@
     </div>
 
     <!-- バージョン情報 -->
-    <div id="version">v0.9 build003 (Updated)</div>
+    <div id="version">v1.0 Module (Updated)</div>
 
 </body>
 </html>
