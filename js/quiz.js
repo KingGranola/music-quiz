@@ -137,7 +137,6 @@ function setupGenreSelection() {
   explanation.style.backgroundColor = "#f8f9fa";
   explanation.style.borderRadius = "6px";
   explanation.innerHTML = `
-    <h3>ジャンル選択について</h3>
     <p>・3ジャンル以上を選択してください</p>
     <p>・3ジャンル選択の場合：15問</p>
     <p>・4ジャンル以上選択の場合：選択したジャンル数 × 5問（最大50問）</p>
