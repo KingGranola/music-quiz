@@ -1,7 +1,7 @@
 // This file is auto-generated from Google Spreadsheet
 const artistData = [
   {
-    "artist_id": "h001",
+    "artist_id": "h00",
     "artist_ja": "カニエ・ウェスト",
     "artist_en": "Kanye West",
     "genre1": "HIPHOP",
