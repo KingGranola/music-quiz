@@ -428,7 +428,7 @@ export const artistData = [
     "artist_ja": "Little Glee Monster",
     "artist_en": "Little Glee Monster",
     "genre1": "J-POP",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0058",
@@ -462,7 +462,7 @@ export const artistData = [
     "artist_ja": "My Hair is Bad",
     "artist_en": "My Hair is Bad",
     "genre1": "J-POP",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0062",
@@ -522,15 +522,6 @@ export const artistData = [
     "major_level": 5
   },
   {
-    "artist_id": "a0068",
-    "artist_ja": "筋肉少女帯",
-    "artist_en": "KING-SHOW",
-    "genre1": "ロック",
-    "genre2": "ハードロック",
-    "genre3": "メタル",
-    "major_level": 5
-  },
-  {
     "artist_id": "a0069",
     "artist_ja": "SEKAI NO OWARI",
     "artist_en": "SEKAI NO OWARI",
@@ -545,7 +536,7 @@ export const artistData = [
     "artist_en": "SHISHAMO",
     "genre1": "J-POP",
     "genre2": "ロック",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0071",
@@ -578,7 +569,7 @@ export const artistData = [
     "genre1": "J-POP",
     "genre2": "ロック",
     "genre3": "オルタナティブ",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0075",
@@ -643,7 +634,7 @@ export const artistData = [
     "genre1": "J-POP",
     "genre2": "オルタナティブ",
     "genre3": "ロック",
-    "major_level": 5,
+    "major_level": 4,
     "has_album_cover": 0
   },
   {
@@ -653,7 +644,7 @@ export const artistData = [
     "genre1": "J-POP",
     "genre2": "オルタナティブ",
     "genre3": "エレクトロ",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0083",
@@ -723,15 +714,6 @@ export const artistData = [
     "major_level": 5
   },
   {
-    "artist_id": "a0090",
-    "artist_ja": "テイ・トウワ",
-    "artist_en": "Towa Tei",
-    "genre1": "ニューウェーブ",
-    "genre2": "テクノ",
-    "genre3": "エレクトロ",
-    "major_level": 5
-  },
-  {
     "artist_id": "a0091",
     "artist_ja": "バンプ オブ チキン",
     "artist_en": "BUMP OF CHICKEN",
@@ -747,7 +729,7 @@ export const artistData = [
     "genre1": "J-POP",
     "genre2": "オルタナティブ",
     "genre3": "ロック",
-    "major_level": 5,
+    "major_level": 4,
     "has_album_cover": 0
   },
   {
@@ -774,7 +756,7 @@ export const artistData = [
     "artist_ja": "ヨルシカ",
     "artist_en": "Yorushika",
     "genre1": "J-POP",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0096",
@@ -844,7 +826,7 @@ export const artistData = [
     "artist_en": "Ryokuoushoku Shakai",
     "genre1": "J-POP",
     "genre2": "ロック",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0104",
@@ -1636,7 +1618,7 @@ export const artistData = [
   },
   {
     "artist_id": "a0212",
-    "artist_ja": "カーメン・マクレー",
+    "artist_ja": "カーメン・マクレエ",
     "artist_en": "Carmen McRae",
     "genre1": "ジャズ",
     "major_level": 5,
@@ -2198,6 +2180,85 @@ export const artistData = [
     "has_album_cover": 0
   },
   {
+    "artist_id": "a0591",
+    "artist_ja": "Derrick May",
+    "artist_en": "デリック・メイ",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0592",
+    "artist_ja": "Juan Atkins",
+    "artist_en": "ホアン・アトキンス",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0593",
+    "artist_ja": "Kevin Saunderson",
+    "artist_en": "ケヴィン・サンダーソン",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0594",
+    "artist_ja": "Eddie Fowlkes",
+    "artist_en": "エディ・フォークス",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0595",
+    "artist_ja": "Richie Hawtin",
+    "artist_en": "リッチー・ホウティン",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0596",
+    "artist_ja": "Sven Väth",
+    "artist_en": "スヴェン・ヴァー",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0597",
+    "artist_ja": "Carl Cox",
+    "artist_en": "カール・コックス",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0598",
+    "artist_ja": "Jeff Mills",
+    "artist_en": "ジェフ・ミルズ",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0599",
+    "artist_ja": "Laurent Garnier",
+    "artist_en": "ローラン・ガルニエ",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0600",
+    "artist_ja": "Dave Clarke",
+    "artist_en": "デイヴ・クラーク",
+    "genre1": "テクノ",
+    "major_level": 5
+  },
+  {
+    "artist_id": "a0090",
+    "artist_ja": "テイ・トウワ",
+    "artist_en": "Towa Tei",
+    "genre1": "テクノ",
+    "genre2": "ニューウェーブ",
+    "genre3": "エレクトロ",
+    "major_level": 5
+  },
+  {
     "artist_id": "a0285",
     "artist_ja": "アシッド・マザーズ・テンプル",
     "artist_en": "Acid Mothers Temple",
@@ -2217,21 +2278,21 @@ export const artistData = [
     "artist_en": "Hanatarash",
     "genre1": "ノイズ",
     "genre2": "パンク",
-    "major_level": 5
+    "major_level": 2
   },
   {
     "artist_id": "a0288",
     "artist_ja": "ペイン・ジャーク",
     "artist_en": "Pain Jerk",
     "genre1": "ノイズ",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0289",
     "artist_ja": "マゾンナ",
     "artist_en": "Masonna",
     "genre1": "ノイズ",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0290",
@@ -2245,7 +2306,7 @@ export const artistData = [
     "artist_ja": "メルツバウ",
     "artist_en": "Merzbow",
     "genre1": "ノイズ",
-    "major_level": 5,
+    "major_level": 3,
     "has_album_cover": 0
   },
   {
@@ -2255,7 +2316,7 @@ export const artistData = [
     "genre1": "ノイズ",
     "genre2": "ロック",
     "genre3": "オルタナティブ",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0293",
@@ -2264,7 +2325,7 @@ export const artistData = [
     "genre1": "ノイズ",
     "genre2": "ジャズ",
     "genre3": "ポップス",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0294",
@@ -2280,7 +2341,7 @@ export const artistData = [
     "artist_en": "Y&T",
     "genre1": "ハードロック",
     "genre2": "ロック",
-    "major_level": 5,
+    "major_level": 3,
     "has_album_cover": 0
   },
   {
@@ -2306,7 +2367,7 @@ export const artistData = [
     "genre1": "ハードロック",
     "genre2": "ロック",
     "genre3": "ポップス",
-    "major_level": 5
+    "major_level": 2
   },
   {
     "artist_id": "a0299",
@@ -2332,7 +2393,7 @@ export const artistData = [
     "artist_en": "Gamma Ray",
     "genre1": "ハードロック",
     "genre2": "メタル",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0302",
@@ -2362,7 +2423,7 @@ export const artistData = [
     "artist_ja": "サクソン",
     "artist_en": "Saxon",
     "genre1": "ハードロック",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0306",
@@ -2377,7 +2438,7 @@ export const artistData = [
     "artist_en": "Thunder",
     "genre1": "ハードロック",
     "genre2": "ロック",
-    "major_level": 5,
+    "major_level": 3,
     "has_album_cover": 0
   },
   {
@@ -2440,14 +2501,14 @@ export const artistData = [
     "artist_en": "Sonata Arctica",
     "genre1": "ハードロック",
     "genre2": "メタル",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0316",
     "artist_ja": "ダイアモンド・ヘッド",
     "artist_en": "Diamond Head",
     "genre1": "ハードロック",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0317",
@@ -2477,7 +2538,7 @@ export const artistData = [
     "artist_en": "Danger Danger",
     "genre1": "ハードロック",
     "genre2": "ロック",
-    "major_level": 5,
+    "major_level": 4,
     "has_album_cover": 0
   },
   {
@@ -2486,7 +2547,7 @@ export const artistData = [
     "artist_en": "DragonForce",
     "genre1": "ハードロック",
     "genre2": "メタル",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0322",
@@ -2598,12 +2659,21 @@ export const artistData = [
     "has_album_cover": 0
   },
   {
+    "artist_id": "a0547",
+    "artist_ja": "ボン・ジョヴィ",
+    "artist_en": "Bon Jovi",
+    "genre1": "ハードロック",
+    "genre2": "ロック",
+    "genre3": "ポップス",
+    "major_level": 5
+  },
+  {
     "artist_id": "a0336",
     "artist_ja": "U.K.サブス",
     "artist_en": "UK Subs",
     "genre1": "パンク",
     "genre2": "ロック",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0337",
@@ -2735,14 +2805,14 @@ export const artistData = [
     "genre1": "パンク",
     "genre2": "ロック",
     "genre3": "メタル",
-    "major_level": 5
+    "major_level": 3
   },
   {
     "artist_id": "a0355",
     "artist_ja": "デッド・ケネディーズ",
     "artist_en": "Dead Kennedys",
     "genre1": "パンク",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0356",
@@ -2797,7 +2867,7 @@ export const artistData = [
     "artist_ja": "George Clinton",
     "artist_en": "ジョージ・クリントン",
     "genre1": "ファンク",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0363",
@@ -2818,7 +2888,7 @@ export const artistData = [
     "artist_ja": "Sly and the Family Stone",
     "artist_en": "スライ・アンド・ザ・ファミリー・ストーン",
     "genre1": "ファンク",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0366",
@@ -4033,6 +4103,15 @@ export const artistData = [
     "major_level": 5
   },
   {
+    "artist_id": "a0068",
+    "artist_ja": "筋肉少女帯",
+    "artist_en": "KING-SHOW",
+    "genre1": "ロック",
+    "genre2": "ハードロック",
+    "genre3": "メタル",
+    "major_level": 5
+  },
+  {
     "artist_id": "a0523",
     "artist_ja": "イーグルス",
     "artist_en": "The Eagles",
@@ -4052,14 +4131,14 @@ export const artistData = [
     "artist_ja": "カサビアン",
     "artist_en": "Kasabian",
     "genre1": "ロック",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0526",
     "artist_ja": "キーン",
     "artist_en": "Keane",
     "genre1": "ロック",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0527",
@@ -4134,7 +4213,7 @@ export const artistData = [
     "artist_ja": "ザ・フラテリス",
     "artist_en": "The Fratellis",
     "genre1": "ロック",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0537",
@@ -4210,15 +4289,6 @@ export const artistData = [
     "genre1": "ロック",
     "genre2": "ポップス",
     "genre3": "オルタナティブ",
-    "major_level": 5
-  },
-  {
-    "artist_id": "a0547",
-    "artist_ja": "ボン・ジョヴィ",
-    "artist_en": "Bon Jovi",
-    "genre1": "ハードロック",
-    "genre2": "ロック",
-    "genre3": "ポップス",
     "major_level": 5
   },
   {

@@ -17,12 +17,12 @@ export const QUESTIONS_PER_GENRE = 5;
  * クイズ全体の最大問題数です。
  * たくさんジャンルを選んでも、ここ設定した数より多くは出題されません。
  */
-export const MAX_QUESTIONS = 50;
+export const MAX_QUESTIONS = 100;
 
 /**
  * 3ジャンル選択した場合の固定問題数です。
  */
-export const QUESTIONS_FOR_3_GENRES = 15;
+export const QUESTIONS_FOR_3_GENRES = 10;
 
 
 // --- ジャンル選択画面の設定 ---
