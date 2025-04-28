@@ -33,7 +33,7 @@ const artistData = [
     "artist_ja": "ケンドリック・ラマー",
     "artist_en": "Kendrick Lamar",
     "genre1": "HIPHOP",
-    "major_level": 5
+    "major_level": 4
   },
   {
     "artist_id": "a0006",
