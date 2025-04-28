@@ -302,7 +302,7 @@ button:disabled {
 }
 
 
-/* --- バージョン情報 --- */
+/* --- バージョン情報 -- */
 #version {
   text-align: right;
   font-size: 0.8em;
