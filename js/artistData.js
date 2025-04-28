@@ -1,5 +1,5 @@
 // This file is auto-generated from Google Spreadsheet
-const artistData = [
+export const artistData = [
   {
     "artist_id": "a0001",
     "artist_ja": "21サベージ",
