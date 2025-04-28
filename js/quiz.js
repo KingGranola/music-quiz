@@ -104,7 +104,16 @@ function setupGenreSelection() {
   const startButton = document.getElementById("start-button");
   const message = document.getElementById("genre-message");
 
-  genreList.forEach(genre => {
+  // 優先表示するジャンル
+  const priorityGenres = ['ポップス', 'ロック', 'HIPHOP', 'R&B', 'J-POP'];
+  
+  // 優先ジャンルとその他のジャンルを分離
+  const sortedGenres = [
+    ...priorityGenres.filter(genre => genreList.includes(genre)),
+    ...genreList.filter(genre => !priorityGenres.includes(genre))
+  ];
+
+  sortedGenres.forEach(genre => {
     const label = document.createElement("label");
     label.style.display = "inline-block";
     label.style.margin = "10px";
@@ -246,12 +255,14 @@ function updateProgress() {
     const scorePercent = (correctCount / maxScore) * 100;
     
     progressBar.className = '';
-    if (scorePercent >= 60) {
-        progressBar.classList.add('good');
-    } else if (scorePercent >= 30) {
-        progressBar.classList.add('normal');
+    
+    // 出題の進行状況に応じて色を変更
+    if (currentQuestion < 15) {
+        progressBar.classList.add('good');  // 前半は緑色
+    } else if (currentQuestion < 27) {
+        progressBar.classList.add('normal');  // 中盤は黄色
     } else {
-        progressBar.classList.add('bad');
+        progressBar.classList.add('bad');  // ラスト3問は赤色
     }
     
     // 進捗メッセージの生成
@@ -327,6 +338,27 @@ function getOverallEvaluation(score) {
     return 'これから知識を深めていけます';
 }
 
+function getRecommendedArtists(selectedGenres) {
+  // 出題されていないアーティストをフィルタリング
+  const unusedArtists = artistData.filter(artist => 
+    !questions.some(q => q.artist_id === artist.artist_id) &&
+    (selectedGenres.includes(artist.genre1) ||
+     selectedGenres.includes(artist.genre2) ||
+     selectedGenres.includes(artist.genre3))
+  );
+
+  // ジャンルスコアに基づいてアーティストをソート
+  const recommendedArtists = unusedArtists
+    .map(artist => ({
+      ...artist,
+      score: calculateGenreScore(artist, selectedGenres)
+    }))
+    .sort((a, b) => a.score - b.score)  // スコアが低い順（正答率が低い順）にソート
+    .slice(0, 3);  // 上位3件を取得
+
+  return recommendedArtists;
+}
+
 function showResult() {
     document.getElementById("buttons").style.display = "none";
     document.getElementById("progress-container").style.display = "none";
@@ -338,6 +370,9 @@ function showResult() {
     const data = labels.map(g => Math.round((genreScores[g].score / genreScores[g].max) * 100));
     const topGenre = labels[data.indexOf(Math.max(...data))];
     const weakGenre = labels[data.indexOf(Math.min(...data))];
+
+    // 推薦アーティストを取得
+    const recommendedArtists = getRecommendedArtists(getSelectedGenres());
 
     const ctx = document.getElementById("chart").getContext("2d");
     document.getElementById("chart").style.display = "block";
@@ -386,6 +421,13 @@ function showResult() {
                 `).join('')}
             </tbody>
         </table>
+        <h3>おすすめアーティスト</h3>
+        <p>あなたの苦手なジャンルに基づいて、以下のアーティストをおすすめします：</p>
+        <ul>
+            ${recommendedArtists.map(artist => `
+                <li>${artist.artist_ja}（${artist.artist_en}）</li>
+            `).join('')}
+        </ul>
         <br>
         <button onclick="location.reload()">もう一度診断する</button>
     `;

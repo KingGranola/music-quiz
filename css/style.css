@@ -217,6 +217,23 @@ table th, table td {
   text-align: center;
 }
 
+#result button {
+  background-color: #000000;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  width: auto;
+  min-width: 200px;
+}
+
+#result button:hover {
+  background-color: #333333;
+}
+
 /* スマートフォン向けのスタイル */
 @media screen and (max-width: 480px) {
   body {
