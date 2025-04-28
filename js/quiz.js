@@ -1,8 +1,8 @@
 let currentQuestion = 0;
 let genreScores = {};
 const questions = [];
-const QUESTIONS_PER_GENRE = 6;  // 1ジャンルあたり6問（合計30問）
-const TOTAL_QUESTIONS = 30;     // 総問題数
+const QUESTIONS_PER_GENRE = 5;  // 1ジャンルあたり5問
+const MAX_QUESTIONS = 50;       // 最大問題数
 
 // アルバムジャケットクイズのフラグ
 let isAlbumCoverQuestion = false;
@@ -130,9 +130,23 @@ function setupGenreSelection() {
     genreOptions.appendChild(label);
   });
 
+  // 説明文を追加
+  const explanation = document.createElement("div");
+  explanation.style.margin = "20px 0";
+  explanation.style.padding = "15px";
+  explanation.style.backgroundColor = "#f8f9fa";
+  explanation.style.borderRadius = "6px";
+  explanation.innerHTML = `
+    <h3>ジャンル選択について</h3>
+    <p>・3ジャンル以上を選択してください</p>
+    <p>・3ジャンル選択の場合：15問</p>
+    <p>・4ジャンル以上選択の場合：選択したジャンル数 × 5問（最大50問）</p>
+  `;
+  genreOptions.parentNode.insertBefore(explanation, genreOptions);
+
   genreOptions.addEventListener("change", () => {
     const selected = getSelectedGenres();
-    const remaining = 5 - selected.length;
+    const remaining = 3 - selected.length;
 
     if (remaining > 0) {
       message.innerText = `あと ${remaining} 個選んでください`;
@@ -144,15 +158,11 @@ function setupGenreSelection() {
       startButton.style.display = "inline-block";
       startButton.disabled = false;
     }
-
-    document.querySelectorAll('input[name="genre"]').forEach(cb => {
-      cb.disabled = selected.length >= 5 && !cb.checked;
-    });
   });
 
   startButton.addEventListener("click", () => {
     const selectedGenres = getSelectedGenres();
-    if (selectedGenres.length !== 5) return;
+    if (selectedGenres.length < 3) return;
     document.getElementById("genre-selection").style.display = "none";
     document.getElementById("container").style.display = "block";
     startQuiz(selectedGenres);
@@ -163,6 +173,11 @@ function startQuiz(selectedGenres) {
   currentQuestion = 0;
   genreScores = {};
   questions.length = 0;
+
+  // 問題数をジャンル数に応じて設定
+  const totalQuestions = Math.min(selectedGenres.length * QUESTIONS_PER_GENRE, MAX_QUESTIONS);
+  const questionsPerGenre = Math.floor(totalQuestions / selectedGenres.length);
+  const remainingQuestions = totalQuestions % selectedGenres.length;
 
   const filteredArtists = artistData.filter(artist => 
     selectedGenres.includes(artist.genre1) ||
@@ -177,49 +192,23 @@ function startQuiz(selectedGenres) {
     );
   });
 
+  // 使用済みのアーティストIDを追跡するセット
+  const usedArtistIds = new Set();
+
   // 通常の質問を追加
-  selectedGenres.forEach(genre => {
+  selectedGenres.forEach((genre, index) => {
     const pool = artistsByGenre[genre];
-    const weightedPool = pool.map(artist => ({
-      artist,
-      weight: calculateGenreScore(artist, selectedGenres)
-    }));
+    const weightedPool = pool
+      .filter(artist => !usedArtistIds.has(artist.artist_id))
+      .map(artist => ({
+        artist,
+        weight: calculateGenreScore(artist, selectedGenres)
+      }));
     
     const selected = [];
-    while (selected.length < QUESTIONS_PER_GENRE && weightedPool.length > 0) {
-      const totalWeight = weightedPool.reduce((sum, item) => sum + item.weight, 0);
-      let random = Math.random() * totalWeight;
-      let index = 0;
-      
-      while (random > weightedPool[index].weight) {
-        random -= weightedPool[index].weight;
-        index++;
-      }
-      
-      selected.push({
-        ...weightedPool[index].artist,
-        currentGenre: genre,
-        isAlbumCover: false
-      });
-      weightedPool.splice(index, 1);
-    }
+    const questionsForThisGenre = questionsPerGenre + (index < remainingQuestions ? 1 : 0);
     
-    questions.push(...selected);
-  });
-
-  // 問題数が不足する場合、残りの問題を追加
-  if (questions.length < TOTAL_QUESTIONS) {
-    const remainingQuestions = TOTAL_QUESTIONS - questions.length;
-    const allArtists = filteredArtists.filter(artist => 
-      !questions.some(q => q.artist_id === artist.artist_id)
-    );
-    
-    const weightedPool = allArtists.map(artist => ({
-      artist,
-      weight: calculateGenreScore(artist, selectedGenres)
-    }));
-    
-    for (let i = 0; i < remainingQuestions && weightedPool.length > 0; i++) {
+    while (selected.length < questionsForThisGenre && weightedPool.length > 0) {
       const totalWeight = weightedPool.reduce((sum, item) => sum + item.weight, 0);
       let random = Math.random() * totalWeight;
       let index = 0;
@@ -230,14 +219,17 @@ function startQuiz(selectedGenres) {
       }
       
       const selectedArtist = weightedPool[index].artist;
-      questions.push({
+      selected.push({
         ...selectedArtist,
-        currentGenre: selectedArtist.genre1,
+        currentGenre: genre,
         isAlbumCover: false
       });
+      usedArtistIds.add(selectedArtist.artist_id);
       weightedPool.splice(index, 1);
     }
-  }
+    
+    questions.push(...selected);
+  });
 
   // 質問をシャッフル
   questions.sort(() => 0.5 - Math.random());
@@ -245,7 +237,7 @@ function startQuiz(selectedGenres) {
 }
 
 function updateProgress() {
-    const percent = Math.floor((currentQuestion / TOTAL_QUESTIONS) * 100);
+    const percent = Math.floor((currentQuestion / MAX_QUESTIONS) * 100);
     const progressBar = document.getElementById("progress-bar");
     progressBar.style.width = `${percent}%`;
     
@@ -266,7 +258,7 @@ function updateProgress() {
     }
     
     // 進捗メッセージの生成
-    let progressMessage = `${currentQuestion} / ${TOTAL_QUESTIONS}問`;
+    let progressMessage = `${currentQuestion} / ${MAX_QUESTIONS}問`;
     if (currentQuestion === 0) {
         progressMessage += "　診断開始！";
     } else if (currentQuestion === 15) {
