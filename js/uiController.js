@@ -1,14 +1,13 @@
 /**
  * uiController.js
  * 画面の表示を更新したり、ユーザーの操作に応じて画面を変更したりする関数をまとめたファイルです。
- * 例えば、問題文を表示したり、ボタンを作成したり、結果を表示したりします。
  */
 
 // 必要な要素や設定、他のモジュールの関数を読み込みます
 import {
-    genreSelectionDiv, containerDiv, chartCanvas, resultDiv, startButton,
+    genreSelectionDiv, containerDiv, /* chartCanvas, */ resultDiv, startButton, // chartCanvas は直接使わなくなる
     genreOptionsDiv, messageP, questionP, genreP, progressContainer,
-    progressBar, progressText, buttonsDiv
+    progressBar, progressText, buttonsDiv, feedbackMessageP
 } from './domElements.js'; // 画面要素
 import {
     MIN_GENRES_TO_START, PRIORITY_GENRES, ANSWER_BUTTON_LEVELS,
@@ -25,7 +24,7 @@ import { getEvaluation, getOverallEvaluation } from './quizLogic.js'; // 評価�
 /**
  * 指定されたIDを持つHTML要素を表示します。
  * (内部的に .hidden クラスを削除します)
- * @param {HTMLElement} element - 表示したいHTML要素オブジェクト
+ * @param {HTMLElement | null} element - 表示したいHTML要素オブジェクト (null の場合あり)
  */
 function showElement(element) {
     if (element) {
@@ -36,7 +35,7 @@ function showElement(element) {
 /**
  * 指定されたIDを持つHTML要素を非表示にします。
  * (内部的に .hidden クラスを追加します)
- * @param {HTMLElement} element - 非表示にしたいHTML要素オブジェクト
+ * @param {HTMLElement | null} element - 非表示にしたいHTML要素オブジェクト (null の場合あり)
  */
 function hideElement(element) {
     if (element) {
@@ -51,7 +50,9 @@ function hideElement(element) {
 export function showGenreSelectionScreen() {
     showElement(genreSelectionDiv);
     hideElement(containerDiv);
-    hideElement(chartCanvas);
+    // hideElement(chartCanvas); // domElements から削除したので不要
+    const initialChartCanvas = document.getElementById('chart'); // 初期HTMLのCanvasを隠す
+    if (initialChartCanvas) hideElement(initialChartCanvas);
     hideElement(resultDiv);
     updateStartButtonState(); // スタートボタンの状態を更新
 }
@@ -63,15 +64,12 @@ export function showGenreSelectionScreen() {
 export function showQuizScreen() {
     hideElement(genreSelectionDiv);
     showElement(containerDiv);
-    hideElement(chartCanvas); // チャートはまだ隠す
+    const initialChartCanvas = document.getElementById('chart'); // 初期HTMLのCanvasを隠す
+    if (initialChartCanvas) hideElement(initialChartCanvas);
     hideElement(resultDiv);   // 結果もまだ隠す
 
-    // クイズ画面内の要素を表示
-    showElement(buttonsDiv);
-    showElement(progressContainer);
-    showElement(progressText);
-    showElement(genreP);
-    showElement(questionP);
+    // クイズ画面内の要素を表示 (初回表示時)
+    // 個別の表示は displayQuestionUI で行う
 }
 
 /**
@@ -84,8 +82,12 @@ function showResultScreenElements() {
     hideElement(progressText);
     hideElement(genreP);
     hideElement(questionP);
+    hideElement(feedbackMessageP);
 
-    // 結果表示エリアとチャートを表示 (チャート描画は chartRenderer が行う)
+    // ★★★ クイズ画面コンテナ自体も隠す ★★★
+    hideElement(containerDiv);
+
+    // 結果表示エリアを表示
     showElement(resultDiv);
     // chartCanvas の表示は renderRadarChart 関数内で行う
 }
@@ -98,7 +100,7 @@ function showResultScreenElements() {
  */
 export function renderGenreOptions() {
     const genreList = getUsedGenres(); // 利用可能な全ジャンルを取得
-    console.log('取得したジャンルリスト:', genreList); // 開発用ログ
+    // console.log('取得したジャンルリスト:', genreList); // 開発用ログ
 
     // 優先ジャンルとそれ以外に分ける
     const sortedGenres = [
@@ -132,13 +134,12 @@ export function renderGenreOptions() {
 
     // 説明文を表示 (既にあれば更新、なければ作成)
     renderExplanationText();
-} // renderGenreOptions 関数の終了
+}
 
 /**
  * ジャンル選択画面の説明文を表示/更新します。
  */
 function renderExplanationText() {
-    // genreSelectionDiv が存在するか確認
     if (!genreSelectionDiv || !genreOptionsDiv) {
         console.error("説明文を表示するための親要素が見つかりません。");
         return;
@@ -148,15 +149,13 @@ function renderExplanationText() {
     if (!explanation) {
         explanation = document.createElement("div");
         explanation.className = 'explanation';
-        // genreOptionsDiv の前に挿入 (親要素が存在する場合のみ)
         if (genreOptionsDiv.parentNode) {
             genreOptionsDiv.parentNode.insertBefore(explanation, genreOptionsDiv);
         } else {
             console.error("genreOptionsDiv の親要素が見つからず、説明文を挿入できません。");
-            return; // 親要素がなければ処理中断
+            return;
         }
     }
-    // 説明文の内容を設定 (設定ファイルの値を使う)
     explanation.innerHTML = `
       <p>・${MIN_GENRES_TO_START}ジャンル以上を選択してください</p>
       <p>・${MIN_GENRES_TO_START}ジャンル選択の場合：${QUESTIONS_FOR_3_GENRES}問</p>
@@ -170,7 +169,6 @@ function renderExplanationText() {
  * @param {string[]} selectedGenres - 現在選択されているジャンルの配列
  */
 export function handleGenreSelectionChange(selectedGenres) {
-    // messageP と startButton が存在するか確認
     if (!messageP || !startButton) {
         console.error("メッセージまたはスタートボタンの要素が見つかりません。");
         return;
@@ -179,13 +177,11 @@ export function handleGenreSelectionChange(selectedGenres) {
     const remaining = MIN_GENRES_TO_START - selectedGenres.length;
 
     if (remaining > 0) {
-        // 選択数が足りない場合
         messageP.innerText = `あと ${remaining} 個選んでください`;
         showElement(messageP);
         hideElement(startButton);
         startButton.disabled = true;
     } else {
-        // 選択数が足りている場合
         messageP.innerText = "";
         hideElement(messageP);
         showElement(startButton);
@@ -197,13 +193,9 @@ export function handleGenreSelectionChange(selectedGenres) {
  * スタートボタンの表示/非表示と有効/無効状態を、現在のジャンル選択数に基づいて更新します。
  */
 function updateStartButtonState() {
-    // domElements.js から要素を取得済みなので、ここで再度取得する必要はない
-    if (!startButton || !messageP || !genreOptionsDiv) return; // 要素がなければ何もしない
+    if (!startButton || !messageP || !genreOptionsDiv) return;
 
     const selectedCheckboxes = genreOptionsDiv.querySelectorAll('input[name="genre"]:checked');
-    const selectedCount = selectedCheckboxes.length;
-
-    // handleGenreSelectionChange を呼び出して状態を更新
     handleGenreSelectionChange(Array.from(selectedCheckboxes).map(cb => cb.value));
 }
 
@@ -215,42 +207,59 @@ function updateStartButtonState() {
  * @param {object} questionData - 表示する問題のデータ (questions 配列の要素)
  */
 function displayQuestionText(questionData) {
-    // questionP と genreP が存在するか確認
     if (!questionP || !genreP) {
         console.error("問題文またはジャンルを表示する要素が見つかりません。");
         return;
     }
-
-    // 問題文 (アーティスト名) を表示
     questionP.innerText = `${questionData.artist_ja}（${questionData.artist_en}）をどれくらい知ってる？`;
-
-    // アーティストのジャンルを表示 (重複を除外)
     const genres = new Set([questionData.genre1, questionData.genre2, questionData.genre3].filter(Boolean));
     genreP.innerText = `ジャンル：${Array.from(genres).join('、')}`;
 }
 
 /**
+ * 一時的なフィードバックメッセージを表示します。
+ * @param {string} message 表示するメッセージ
+ * @param {number} duration 表示時間 (ミリ秒)
+ */
+function showTemporaryFeedback(message, duration = 1000) {
+    if (feedbackMessageP) {
+        feedbackMessageP.innerText = message;
+        showElement(feedbackMessageP); // 表示
+        setTimeout(() => {
+            hideElement(feedbackMessageP);
+        }, duration);
+    }
+}
+
+/**
  * 回答ボタンをHTMLに生成して表示します。各ボタンにはクリック時の処理も設定します。
+ * クリック時にフィードバック表示も行います。
  */
 function createAnswerButtons() {
-    // buttonsDiv が存在するか確認
     if (!buttonsDiv) {
         console.error("回答ボタンを表示する要素 (buttonsDiv) が見つかりません。");
         return;
     }
-
     buttonsDiv.innerHTML = ''; // 既存のボタンをクリア
 
-    // 設定ファイルからボタン情報を取得してループ
     ANSWER_BUTTON_LEVELS.forEach(item => {
         const button = document.createElement('button');
-        button.classList.add(`btn-level-${item.level}`); // CSSクラスを設定 (色分け用)
+        // CSSクラスを設定 (style.css の定義に合わせる)
+        button.classList.add(`btn-level-${item.level}`);
         button.dataset.level = item.level; // data-level属性にレベルを保持
         button.textContent = item.text;    // ボタンのテキストを設定
 
-        // ボタンがクリックされたときの処理を設定
-        // quizLogic.js の processAnswer 関数を、対応するレベルを引数にして呼び出す
-        button.addEventListener('click', () => processAnswer(item.level));
+        button.addEventListener('click', () => {
+            // フィードバックメッセージ表示
+            const feedbackMessages = ["記録しました！", "なるほど！", "次へ！", "OK！"];
+            const randomFeedback = feedbackMessages[Math.floor(Math.random() * feedbackMessages.length)];
+            showTemporaryFeedback(randomFeedback, 800); // 0.8秒表示
+
+            // 回答処理を実行 (少し遅延)
+            setTimeout(() => {
+                processAnswer(item.level);
+            }, 100);
+        });
 
         buttonsDiv.appendChild(button); // HTMLに追加
     });
@@ -262,21 +271,16 @@ function createAnswerButtons() {
  * @param {number} totalQuestions - 総問題数
  */
 export function updateProgressUI(currentIndex, totalQuestions) {
-    // progressBar と progressText が存在するか確認
     if (!progressBar || !progressText) {
         console.error("プログレスバーまたは進捗テキストの要素が見つかりません。");
         return;
     }
 
-    // --- プログレスバーの幅を計算 ---
-    // (現在の問題数 + 1) / 総問題数 で進捗率を計算 (0除算を避ける)
     const percent = totalQuestions > 0 ? Math.floor(((currentIndex + 1) / totalQuestions) * 100) : 0;
-    progressBar.style.width = `${percent}%`; // CSSのwidthプロパティを更新
+    progressBar.style.width = `${percent}%`;
 
-    // --- プログレスバーの色を更新 ---
     const progressRatio = totalQuestions > 0 ? (currentIndex + 1) / totalQuestions : 0;
-    progressBar.className = 'progress-bar'; // まず基本クラスだけにする
-    // 設定ファイルの閾値に基づいてクラスを追加
+    progressBar.className = 'progress-bar'; // 基本クラス
     if (progressRatio < PROGRESS_BAR_THRESHOLDS.GOOD_UNTIL) {
         progressBar.classList.add('good');
     } else if (progressRatio < PROGRESS_BAR_THRESHOLDS.NORMAL_UNTIL) {
@@ -285,36 +289,36 @@ export function updateProgressUI(currentIndex, totalQuestions) {
         progressBar.classList.add('bad');
     }
 
-    // --- 進捗テキストを更新 ---
-    let progressMessage = `${currentIndex + 1} / ${totalQuestions}問`; // 基本のテキスト
-    // 特定のタイミングで追加メッセージを設定
+    let progressMessage = `${currentIndex + 1} / ${totalQuestions}問`;
     const msgConfig = PROGRESS_TEXT_MESSAGES;
-    // totalQuestions が 0 の場合や currentIndex が不正な場合のチェックを追加
     if (totalQuestions > 0) {
-        if (currentIndex === msgConfig.START) {
-            progressMessage += "　診断開始！";
-        } else if (totalQuestions > 1 && Math.abs(progressRatio - msgConfig.HALF) < (1 / totalQuestions)) {
-            progressMessage += "　あと半分！";
-        } else if (totalQuestions > 1 && progressRatio > msgConfig.ALMOST_DONE_START && progressRatio <= msgConfig.ALMOST_DONE_END) {
-             progressMessage += "　あと少し！";
-        } else if (currentIndex === totalQuestions - msgConfig.LAST_ONE_OFFSET) { // 最後の問題のインデックスは totalQuestions - 1
-            progressMessage += "　最後の1問！";
-        }
+        if (currentIndex === msgConfig.START) progressMessage += "　診断開始！";
+        else if (totalQuestions > 1 && Math.abs(progressRatio - msgConfig.HALF) < (1 / totalQuestions)) progressMessage += "　あと半分！";
+        else if (totalQuestions > 1 && progressRatio > msgConfig.ALMOST_DONE_START && progressRatio <= msgConfig.ALMOST_DONE_END) progressMessage += "　あと少し！";
+        else if (currentIndex === totalQuestions - msgConfig.LAST_ONE_OFFSET) progressMessage += "　最後の1問！";
     }
-    progressText.innerText = progressMessage; // テキストを表示
+    progressText.innerText = progressMessage;
 }
 
 /**
  * クイズ画面に現在の問題を表示するメインの関数。
- * 問題文、ジャンル、回答ボタン、プログレスバーを更新します。
+ * フェード効果を削除し、即時表示するように変更。
  * @param {object} questionData - 表示する問題のデータ
  * @param {number} currentIndex - 現在の問題インデックス
  * @param {number} totalQuestions - 総問題数
  */
 export function displayQuestionUI(questionData, currentIndex, totalQuestions) {
+    // --- フェード関連の処理を削除 ---
+
+    // --- 内容の更新 ---
     displayQuestionText(questionData); // 問題文とジャンルを表示
     createAnswerButtons();          // 回答ボタンを生成
     updateProgressUI(currentIndex, totalQuestions); // プログレスバーを更新
+
+    // --- 要素の表示 (hidden クラスを削除) ---
+    // 以前フェードさせていた要素を表示状態にする
+    const elementsToShow = [questionP, genreP, buttonsDiv, progressContainer, progressText];
+    elementsToShow.forEach(el => showElement(el)); // showElement は hidden クラスを削除する関数
 }
 
 
@@ -324,38 +328,36 @@ export function displayQuestionUI(questionData, currentIndex, totalQuestions) {
  * 計算された診断結果データをもとに、結果画面のHTMLを生成して表示します。
  * チャートの描画も行います。
  * @param {object | null} resultData - 診断結果のデータオブジェクト、またはデータがない場合は null
- *                                     (quizLogic.js の generateResultData の戻り値)
  */
 export function displayResultUI(resultData) {
-    // resultDiv が存在するか確認
+    // --- デバッグログ追加 ---
+    console.log('[uiController] displayResultUI 関数が呼び出されました。');
+    console.log('[uiController] 受け取った resultData:', resultData);
+
     if (!resultDiv) {
-        console.error("結果を表示する要素 (resultDiv) が見つかりません。");
+        console.error("[uiController] ERROR: 結果を表示する要素 (resultDiv) が見つかりません。");
         return;
     }
 
-    // 結果データがない場合 (有効な回答がなかったなど)
+    // resultData が null または labels が空の場合の処理
     if (!resultData || !resultData.labels || resultData.labels.length === 0) {
+        console.warn("[uiController] WARN: 有効な結果データ (resultData または resultData.labels) がないため、チャート描画をスキップし、メッセージを表示します。");
         resultDiv.innerHTML = `<h2>診断結果</h2><p>有効な回答がありませんでした。診断をやり直してください。</p><button id="reload-button">もう一度診断する</button>`;
-        showResultScreenElements(); // 結果表示エリアを表示
-        hideElement(chartCanvas);   // チャートは非表示
-        setupReloadButton();      // リロードボタンの設定
-        console.warn("有効な結果データがないため、結果表示を中断しました。");
-        return;
+        showResultScreenElements(); // containerDiv も隠される
+        // hideElement(chartCanvas); // domElements から削除したので不要
+        setupReloadButton();
+        return; // 処理中断
     }
 
-    // --- 結果データの展開 ---
+    // resultData から必要な情報を展開
     const { labels, data, topGenre, weakGenre, recommended, scores } = resultData;
 
-    // --- チャート描画 ---
-    // chartRenderer.js の関数を呼び出してレーダーチャートを描画
-    renderRadarChart(labels, data); // この関数内で chartCanvas が表示される
-
-    // --- 結果テキストとテーブルのHTMLを生成 ---
+    // --- 結果テキストとテーブルのHTMLを生成 (Canvas要素も含むように修正) ---
     const tableRowsHtml = labels.map((genre, index) => {
-        // scores[genre] が存在するか確認
         const scoreInfo = scores[genre];
         const count = scoreInfo?.count || 0;
-        const percentage = data[index] ?? 0; // data[index] が undefined の場合は 0 を使う
+        // data[index] が undefined や null の可能性を考慮
+        const percentage = (data && typeof data[index] === 'number') ? data[index] : 0;
         return `
             <tr>
                 <td>${genre}</td>
@@ -365,7 +367,7 @@ export function displayResultUI(resultData) {
                 <td>${getOverallEvaluation(percentage)}</td>
             </tr>
         `;
-    }).join(''); // 各行のHTMLを結合
+    }).join('');
 
     const recommendedListHtml = recommended && recommended.length > 0 ? `
         <h3>おすすめアーティスト</h3>
@@ -375,11 +377,12 @@ export function displayResultUI(resultData) {
                 <li>${artist.artist_ja}（${artist.artist_en}） - 主なジャンル: ${artist.genre1 || 'N/A'}</li>
             `).join('')}
         </ul>
-    ` : ''; // おすすめがなければ何も表示しない
+    ` : '';
 
-    // --- 結果表示エリアにHTMLを設定 ---
+    // --- 結果表示エリアにHTMLを設定 (Canvas要素を追加) ---
     resultDiv.innerHTML = `
         <h2>診断完了！</h2>
+        <canvas id="chart"></canvas>  <!-- ★★★ ここに Canvas 要素を追加 ★★★ -->
         ${topGenre && weakGenre ? `<p><strong>あなたは「${topGenre}」に詳しく、「${weakGenre}」はこれから伸ばせるジャンルです！</strong></p>` : '<p>診断結果が出ました！</p>'}
         <h3>ジャンル別の診断内訳</h3>
         <div class="table-container">
@@ -404,10 +407,36 @@ export function displayResultUI(resultData) {
     `;
 
     // --- 画面要素の表示/非表示 ---
-    showResultScreenElements(); // 結果表示に必要な要素を表示し、不要なものを隠す
+    showResultScreenElements(); // containerDiv も隠される
+
+    // ★★★ innerHTML で書き換えた後、Canvas 要素を再取得 ★★★
+    const newChartCanvas = document.getElementById('chart');
+    if (!newChartCanvas) {
+        console.error("[uiController] ERROR: innerHTML 書き換え後に Canvas 要素 (#chart) が見つかりません。HTML生成コードを確認してください。");
+        // Canvas がなければチャート描画はできないので、ボタン設定に進む
+        setupReloadButton();
+        return;
+    }
+
+    // --- チャート描画呼び出し前のログ ---
+    console.log('[uiController] renderRadarChart を呼び出します。');
+    console.log('[uiController] labels:', labels);
+    console.log('[uiController] data:', data);
+
+    // --- チャート描画 ---
+    try {
+        // ★★★ 再取得した Canvas 要素を第一引数として渡す ★★★
+        renderRadarChart(newChartCanvas, labels, data);
+
+    } catch (error) {
+        console.error("[uiController] ERROR: renderRadarChart の呼び出し中にエラーが発生しました:", error);
+        // エラーが発生しても他の結果は表示し、ボタンは設定する
+        if (newChartCanvas) hideElement(newChartCanvas); // エラー時はCanvasを隠す
+    }
 
     // --- 「もう一度診断する」ボタンの設定 ---
     setupReloadButton();
+    console.log('[uiController] 結果表示が完了しました。');
 }
 
 /**
@@ -417,14 +446,13 @@ export function displayResultUI(resultData) {
 function setupReloadButton() {
     const reloadButton = document.getElementById('reload-button');
     if (reloadButton) {
-        // 既存のリスナーがあれば削除（念のため）
+        // イベントリスナーの重複を防ぐため、一度クローンして置き換える
         reloadButton.replaceWith(reloadButton.cloneNode(true));
         const newReloadButton = document.getElementById('reload-button');
-        // ボタンがクリックされたら、location.reload() を実行してページを再読み込み
         if (newReloadButton) {
             newReloadButton.addEventListener('click', () => location.reload());
         }
     } else {
-        console.warn("リロードボタンが見つかりませんでした。");
+        console.warn("[uiController] リロードボタンが見つかりませんでした。");
     }
 }

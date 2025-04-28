@@ -1,5 +1,5 @@
-/* 基本的なスタイルリセット (任意) */
-body, h1, h2, h3, p, ul, li, button, label, input, table {
+/* 基本的なスタイルリセット */
+body, h1, h2, h3, p, ul, li, button, label, input, table, canvas { /* canvas も追加 */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -18,39 +18,46 @@ body {
   display: none !important; /* !important で確実に非表示にする */
 }
 
+/* --- コンテナのスタイル --- */
+#genre-selection, #container, #result {
+  background-color: #fff;
+  padding: 25px; /* 少し広めに */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 800px;
+  margin: 20px auto;
+  margin-bottom: 20px; /* 下マージン統一 */
+}
+
+/* --- ボタン共通スタイル --- */
 button {
   cursor: pointer;
-  padding: 10px 15px;
+  padding: 10px 20px; /* 少し大きめに */
   margin: 5px;
   border: none;
-  border-radius: 4px;
-  background-color: #5c67f2;
-  color: white;
+  border-radius: 5px; /* 角丸を少し大きく */
   font-size: 1em;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease; /* transform も追加 */
 }
 
 button:hover:not(:disabled) {
-  background-color: #4a54cc;
+  opacity: 0.9; /* ホバー効果を opacity に変更 */
+}
+
+/* ボタン押下時の簡単なフィードバック */
+button:not(:disabled):active {
+  transform: scale(0.98);
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  background-color: #ccc; /* 無効時の色を明確に */
+  opacity: 0.7; /* opacity も少し調整 */
 }
 
 /* --- ジャンル選択画面 --- */
-#genre-selection {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 800px;
-  margin: 20px auto;
-}
-
 #genre-selection h2 {
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* 少しマージンを増やす */
   text-align: center;
 }
 
@@ -58,129 +65,150 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* 少しマージンを増やす */
 }
 
 .genre-label {
-  display: inline-block;
+  /* display: inline-block; を削除し、flex アイテムとして扱う */
   margin: 8px 12px;
   cursor: pointer;
   font-size: 1.1em;
+  padding: 8px 12px; /* パディングを追加 */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.genre-label:hover {
+  background-color: #e9e9e9;
 }
 
 .genre-checkbox {
   margin-right: 8px;
-  transform: scale(1.3);
-  vertical-align: middle; /* チェックボックスとテキストの位置を調整 */
+  transform: scale(1.2); /* 少し小さく */
+  vertical-align: middle;
 }
 
 .explanation {
   margin: 20px 0;
   padding: 15px;
-  background-color: #e9ecef;
-  border-radius: 6px;
-  border-left: 5px solid #adb5bd;
+  background-color: #eee; /* 少し濃いグレー */
+  border-radius: 5px;
+  border-left: 4px solid #ccc; /* ボーダーを少し細く */
   font-size: 0.9em;
 }
 
 .explanation p {
-  margin-bottom: 5px;
+  margin-bottom: 8px; /* 少しマージンを増やす */
+}
+.explanation p:last-child {
+  margin-bottom: 0; /* 最後のp要素の下マージンを削除 */
 }
 
 #genre-message {
-  color: #dc3545; /* 赤色 */
+  color: #d9534f; /* エラーメッセージの色 */
   font-weight: bold;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 #start-button {
-  display: block; /* 中央揃えのため */
-  margin: 20px auto 0; /* 上マージンを追加 */
+  display: block;
+  margin: 25px auto 0; /* 上マージンを少し増やす */
   padding: 12px 25px;
   font-size: 1.2em;
+  background-color: #5cb85c; /* 緑色 */
+  color: white;
+  font-weight: bold;
+}
+#start-button:hover:not(:disabled) {
+   background-color: #4a9b4a; /* ホバー色 */
+   opacity: 1; /* opacity 変更を無効化 */
 }
 
 
 /* --- クイズ画面 --- */
 #container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 800px;
-  margin: 20px auto;
-  text-align: center; /* コンテナ内の要素を中央揃え */
+  text-align: center;
+  min-height: 500px; /* ★★★ クイズ画面の最低高さを確保 ★★★ */
 }
 
-#container h1 {
+#container h1 { /* クイズ画面に h1 はない想定だが念のため */
   margin-bottom: 10px;
   font-size: 1.8em;
 }
 
 #genre {
-  font-style: italic;
-  color: #6c757d;
+  font-size: 0.9em; /* 少し小さく */
+  color: #666; /* 少し濃く */
   margin-bottom: 15px;
+  min-height: calc(0.9em * 1.6 * 2); /* 最低高さを確保 */
 }
 
 #question {
   font-size: 1.3em;
-  margin-bottom: 20px;
-  min-height: 3em; /* 問題文の高さ変動に対応 */
+  font-weight: bold; /* 太字に */
+  margin-bottom: 25px; /* 少しマージンを増やす */
+  min-height: calc(1.3em * 1.6 * 3); /* 最低高さを確保 */
 }
 
 /* プログレスバー */
 #progress-container {
-  width: 90%;
+  width: 100%; /* 幅を100%に */
   max-width: 600px;
   background-color: #e9ecef;
-  border-radius: 5px;
-  margin: 15px auto; /* 中央揃え */
-  overflow: hidden; /* 角丸のため */
+  border-radius: .25rem; /* bootstrap風の角丸 */
+  margin: 15px auto;
+  overflow: hidden;
+  height: 20px; /* 高さを少し低く */
 }
 
 #progress-bar {
-  width: 0%; /* 初期状態 */
-  height: 25px;
-  border-radius: 5px;
+  width: 0%;
+  height: 100%; /* 親要素に合わせる */
+  /* border-radius: 5px; は親要素で overflow: hidden しているので不要 */
   text-align: center;
-  line-height: 25px;
+  line-height: 20px; /* 高さに合わせる */
   color: white;
   font-weight: bold;
-  transition: width 0.4s ease, background-color 0.4s ease; /* 背景色もアニメーション */
+  font-size: 0.8em; /* 少し小さく */
+  white-space: nowrap;
+  transition: width 0.6s ease, background-color 0.6s ease;
 }
 
 /* プログレスバーの色分け */
-.progress-bar.good { background-color: #28a745; } /* 緑 */
-.progress-bar.normal { background-color: #ffc107; color: #333; } /* 黄 */
-.progress-bar.bad { background-color: #dc3545; } /* 赤 */
+.progress-bar.good { background-color: #5cb85c; } /* 緑 */
+.progress-bar.normal { background-color: #f0ad4e; color: #333; } /* 黄 */
+.progress-bar.bad { background-color: #d9534f; } /* 赤 */
 
 #progress-text {
-  margin-bottom: 20px;
+  margin-bottom: 25px; /* 少しマージンを増やす */
   font-size: 0.9em;
-  color: #6c757d;
+  color: #666;
+  text-align: center;
 }
 
 /* 回答ボタン */
 #buttons {
   margin-bottom: 20px;
+  display: flex; /* flexbox を使用 */
+  flex-direction: column; /* 縦に並べる */
+  align-items: center; /* 中央揃え */
+  gap: 10px; /* ボタン間の隙間 */
 }
 
 #buttons button {
-  display: block; /* 縦に並べる */
-  width: 80%;
-  max-width: 400px;
-  margin: 8px auto; /* 中央揃え */
+  display: block; /* display: block は flex アイテムには不要だが念のため */
+  width: 90%; /* 幅を少し広げる */
+  max-width: 450px; /* 最大幅も少し広げる */
+  margin: 0; /* flex gap で間隔を管理するので個別マージン不要 */
   font-size: 1.1em;
-  background-color: #6c757d; /* デフォルト色 */
+  /* デフォルト色は不要、レベル別で指定 */
 }
-/* ボタンの色分け (例) */
-#buttons .btn-level-4 { background-color: #007bff; }
-#buttons .btn-level-3 { background-color: #17a2b8; }
-#buttons .btn-level-2 { background-color: #ffc107; color: #333; }
-#buttons .btn-level-1 { background-color: #fd7e14; }
-#buttons .btn-level-0 { background-color: #dc3545; }
+/* ボタンの色分け (レベル別クラスを使用) */
+.btn-level-4 { background-color: #d9534f; color: white; } /* 赤 */
+.btn-level-3 { background-color: #f0ad4e; color: white; } /* オレンジ */
+.btn-level-2 { background-color: #5bc0de; color: white; } /* 水色 */
+.btn-level-1 { background-color: #777;    color: white; } /* グレー */
+.btn-level-0 { background-color: #eee;    color: #333; } /* 薄いグレー */
 
 #buttons button:hover:not(:disabled) {
   opacity: 0.85; /* ホバー時の透明度変更 */
@@ -188,74 +216,89 @@ button:disabled {
 
 
 /* --- 結果表示 --- */
-#chart {
-  display: block; /* Canvasはデフォルトでインライン */
-  max-width: 500px; /* 最大幅 */
-  max-height: 500px; /* 最大高さ */
-  width: 100%;      /* 親要素に合わせる */
-  height: auto;     /* アスペクト比を維持 */
-  margin: 30px auto; /* 上下のマージン */
+#result {
+  /* ... 他のスタイル ... */
+  text-align: center; /* ★★★ これを追加 ★★★ */
 }
 
 #result h2 {
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* 少しマージンを増やす */
+  /* text-align: center; は親要素で指定したので不要 */
 }
 #result h3 {
-  margin-top: 25px;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #dee2e6;
-  padding-bottom: 5px;
+  margin-top: 30px; /* 少しマージンを増やす */
+  margin-bottom: 15px; /* 少しマージンを増やす */
+  border-bottom: 2px solid #eee; /* 少し薄い線に */
+  padding-bottom: 8px; /* 少しパディングを増やす */
+  text-align: left; /* テーブルやリストの見出しは左揃えに戻す */
+  max-width: 600px; /* テーブルやリストの幅に合わせる */
+  margin-left: auto;
+  margin-right: auto;
 }
 #result p {
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* 少しマージンを増やす */
+  /* text-align: center; は親要素で指定したので不要 */
 }
 #result strong {
   font-size: 1.1em;
 }
 
+#chart {
+  display: inline-block; /* ★★★ block から inline-block に変更 ★★★ */
+  max-width: 500px;
+  width: 100%;
+  height: 400px;
+  margin: 30px auto; /* 上下マージン、左右は text-align で中央揃え */
+}
+
 /* 結果テーブル */
 .table-container {
-  overflow-x: auto; /* テーブルがはみ出す場合にスクロール */
-  margin-bottom: 20px;
+  overflow-x: auto;
+  margin: 20px auto; /* 左右中央揃え */
+  max-width: 600px; /* テーブルの最大幅 */
 }
 #result table {
   width: 100%;
   border-collapse: collapse;
-  margin: 15px 0;
+  /* margin: 15px 0; は table-container で管理 */
 }
 #result th, #result td {
-  border: 1px solid #dee2e6;
-  padding: 8px 12px;
-  text-align: center;
+  border: 1px solid #ddd; /* 少し薄い線に */
+  padding: 10px 12px; /* 少しパディングを調整 */
+  text-align: center; /* 中央揃え */
 }
 #result th {
-  background-color: #f8f9fa;
+  background-color: #f2f2f2; /* 少し薄い背景色 */
+  font-weight: bold; /* 太字に */
 }
-#result tbody tr:nth-child(odd) {
-  background-color: #f8f9fa; /* 縞模様 */
+#result tbody tr:nth-child(even) { /* 偶数行 */
+  background-color: #f9f9f9; /* 縞模様 */
 }
 
 /* おすすめアーティストリスト */
 #result ul {
-  list-style: none; /* 点を削除 */
-  padding-left: 0;
-  text-align: left; /* 左揃え */
-  max-width: 500px;
-  margin: 0 auto 20px; /* 中央揃え */
+  list-style: disc; /* デフォルトの点に戻す */
+  padding-left: 20px; /* 左にパディングを追加 */
+  text-align: left;
+  max-width: 600px; /* 少し幅を広げる */
+  margin: 20px auto; /* 上下マージン、左右中央揃え */
 }
 #result li {
-  background-color: #e9ecef;
-  padding: 8px 12px;
-  margin-bottom: 5px;
-  border-radius: 4px;
+  /* background-color: #e9ecef; は削除してシンプルに */
+  padding: 5px 0; /* 上下パディング */
+  margin-bottom: 8px; /* 少しマージンを増やす */
+  /* border-radius: 4px; は削除 */
 }
 
 #reload-button {
-  margin-top: 20px;
-  background-color: #28a745; /* 緑色 */
+  display: block; /* 中央揃えのため */
+  margin: 30px auto 0; /* 上マージン */
+  background-color: #0275d8; /* 青色 */
+  color: white;
 }
-#reload-button:hover {
-  background-color: #218838;
+#reload-button:hover:not(:disabled) {
+  background-color: #025aa5; /* ホバー色 */
+  opacity: 1;
 }
 
 

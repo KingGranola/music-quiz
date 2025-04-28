@@ -3,68 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ジャンル別 音楽知識診断</title>
-    <!-- Chart.js を先に読み込み (defer) -->
-    <!-- Chart.js は外部ライブラリなので、HTMLに残しておくのが一般的です -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <!-- CSS を読み込み -->
-    <link rel="stylesheet" href="./css/style.css">
-
-    <!-- !!! モジュール化されたJavaScriptのエントリーポイントを読み込む !!! -->
-    <!-- type="module" を指定することで、import/export が使えるようになります -->
-    <!-- artistData.js や他の分割されたJSファイルは main.js から import されるので、ここでは不要です -->
-    <script src="./js/main.js" type="module"></script>
-
-    <!-- エラーハンドリング用のスクリプト (これは残してもOK) -->
+    <title>音楽知識診断</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js の読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- エラーハンドリング用 -->
     <script>
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Unhandled Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
-            // 必要であればユーザーにエラーを通知
-            // alert('予期せぬエラーが発生しました。ページを再読み込みするか、開発者にご連絡ください。');
-            return false;
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Unhandled Error:", message);
+            console.error("URL:", source);
+            console.error("Line:", lineno);
+            console.error("Column:", colno);
+            console.error("Error object:", error);
+            // ここでユーザーにエラーメッセージを表示する処理を追加することも可能
+            const body = document.querySelector('body');
+            if (body) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.color = 'red';
+                errorDiv.style.backgroundColor = 'lightyellow';
+                errorDiv.style.border = '1px solid red';
+                errorDiv.style.padding = '10px';
+                errorDiv.style.margin = '10px';
+                errorDiv.textContent = `エラーが発生しました。画面を再読み込みするか、開発者にご連絡ください。(詳細: ${message})`;
+                // body.insertBefore(errorDiv, body.firstChild); // 画面上部に表示
+            }
+            return true; // デフォルトのエラー処理を抑制
         };
     </script>
 </head>
 <body>
-    <!-- ジャンル選択画面 (初期表示) -->
+
+    <h1>音楽知識診断</h1>
+
+    <!-- ジャンル選択画面 -->
     <div id="genre-selection">
-        <h2>好きな音楽ジャンルを3つ以上選んでください</h2>
-        <!-- ジャンル選択肢の表示エリア -->
+        <h2>診断したいジャンルを選んでください</h2>
+        <div class="explanation">
+            <!-- 説明文は uiController.js で動的に設定されます -->
+        </div>
         <div id="genre-options">
-            <!-- ここにジャンル選択肢が uiController.js によって動的に生成される -->
+            <!-- ジャンル選択肢は uiController.js で動的に生成されます -->
         </div>
-        <!-- 説明文表示エリア (uiController.js が生成) -->
-        <!-- メッセージ表示エリア (初期は非表示 or メッセージ表示) -->
-        <p id="genre-message" class="hidden"></p>
-        <!-- スタートボタン (初期は非表示 & disabled) -->
-        <button id="start-button" class="hidden" disabled>診断開始</button>
+        <p id="genre-message" class="hidden"></p> <!-- ジャンル選択時のメッセージ -->
+        <button id="start-button" class="hidden" disabled>診断スタート！</button>
     </div>
 
-    <!-- クイズ画面 (初期状態は hidden クラスで非表示) -->
+    <!-- クイズ画面 -->
     <div id="container" class="hidden">
-        <h1>ジャンル別 音楽知識診断</h1>
-        <!-- 現在のジャンル表示用 -->
-        <p id="genre"></p>
-        <!-- 問題文表示用 -->
-        <p id="question"></p>
-        <!-- プログレスバー -->
+        <!-- <h1>クイズ</h1> クイズ画面では不要かも -->
         <div id="progress-container">
-            <div id="progress-bar"></div>
+            <div id="progress-bar" class="progress-bar"></div>
         </div>
-        <!-- 進捗テキスト (例: 1/15) -->
         <p id="progress-text"></p>
-        <!-- 回答ボタン表示エリア -->
+        <p id="genre"></p>
+        <p id="question"></p>
         <div id="buttons">
-            <!-- ここに回答ボタンが uiController.js によって動的に生成される -->
+            <!-- 回答ボタンは uiController.js で動的に生成されます -->
         </div>
-        <!-- 結果表示用グラフ (初期状態は hidden クラスで非表示) -->
-        <canvas id="chart" class="hidden" role="img" aria-label="診断結果グラフ"></canvas>
-        <!-- テキストでの結果表示用エリア -->
-        <div id="result" class="hidden"></div>
+        <!-- ↓↓↓ フィードバックメッセージ表示用の要素 ↓↓↓ -->
+        <p id="feedback-message" class="hidden"></p>
     </div>
 
-    <!-- バージョン情報 -->
-    <div id="version">v1.0 Module (Updated)</div>
+    <!-- 結果表示画面 -->
+    <div id="result" class="hidden">
+        <h2>診断結果</h2>
+        <canvas id="chart"></canvas> <!-- レーダーチャート表示エリア -->
+        <!-- 結果のテキストやテーブルは uiController.js で動的に生成されます -->
+    </div>
 
+    <div id="version">v1.0.0</div> <!-- バージョン情報など -->
+
+    <!-- JavaScript モジュールの読み込み -->
+    <script type="module" src="js/main.js" defer></script>
+    <!-- Live Reload スクリプト (開発用) -->
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 </body>
 </html>
